@@ -10,3 +10,7 @@ turnLeft_degree(10, 90)
 
 
 forward_mm(30, 500)
+forward_mm(30, 500)
+forward_mm(30, 500)
+forward_mm(30, 500)
+forward_mm(30, 500)
