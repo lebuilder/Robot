@@ -137,14 +137,30 @@ class ServiceEchange :
 
             tab_octets = self.__socket_echange.recv(1024)
 
-            msg_client = tab_octets.decode(encoding="utf-8")
-            print("message du client :", msg_client)
+            commande = tab_octets.decode(encoding="utf-8")
 
-            msg_serveur:str = f"**{msg_client}**"
-
-            if msg_client == "fin":
+            if commande == "z":
+                deplacement.avancer()
+            elif commande == "s":
+                deplacement.reculer()
+            elif commande == "q":
+                deplacement.tourner_gauche()
+            elif commande == "d":
+                deplacement.tourner_droite()
+            elif commande == "course_autonome":
+                Course_autonome.course()
+            elif commande == "arret_course_autonome":
+                Course_autonome.arret_autonome()
+            elif commande == "fin":
+                deplacement.arret()
                 fin=True
-
+                
+                
+            # envoie données capteurs au client
+            msg_serveur:str = f"distance capteur 2 : {proxSensor(2)}\n
+                                distance capteur 3 : {proxSensor(3)}\n
+                                distance capteur 4 : {proxSensor(4)}\n"
+                                
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
     
@@ -175,21 +191,3 @@ if __name__=="__main__":
     Robot = deplacement()
     Capteur = capteur()
     Course_autonome = autonome()
-     
-     
-    try:
-        Course_autonome.course()
-    except KeyboardInterrupt:
-        Course_autonome.arret_autonome()
-        
-    while True:
-        if keyboard.is_pressed('z'):
-            deplacement.avancer()
-        elif keyboard.is_pressed('s'):
-            deplacement.reculer()
-        elif keyboard.is_pressed('q'):
-            deplacement.tourner_gauche()
-        elif keyboard.is_pressed('d'):
-            deplacement.tourner_droite()
-        time.sleep(0.1)
-        
