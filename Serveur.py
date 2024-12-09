@@ -50,6 +50,7 @@ class deplacement:
     def arret(self):
         motorLeft(0,0)
         motorRight(0,0)
+        return True
 
 
 class capteur:
@@ -79,17 +80,21 @@ class autonome(deplacement, capteur):
         deplacement.__init__(self)
         capteur.__init__(self)
     
-    def eviter_obstacle(self):
+    def course(self):
         while True:
-            if self.get_p2() > 100:
+            p2 = self.get_p2()
+            p3 = self.get_p3()
+            p4 = self.get_p4()
+            
+            if p3 > 100:  # Obstacle droit devant
                 self.tourner_gauche()
-            elif self.get_p3() > 100:
-                self.tourner_gauche()
-            elif self.get_p4() > 100:
+            elif p2 > 100:  # Obstacle à gauche
+                self.tourner_droite()
+            elif p4 > 100:  # Obstacle à droite
                 self.tourner_gauche()
             else:
                 self.avancer()
-            time.sleep(0.1)
+            time.sleep(0.01)
             
     def arret_autonome(self):
         self.arret()
@@ -167,6 +172,13 @@ if __name__=="__main__":
 
     Robot = deplacement()
     Capteur = capteur()
+    Course_autonome = autonome()
+     
+     
+    try:
+        Course_autonome.course()
+    except KeyboardInterrupt:
+        Course_autonome.arret_autonome()
         
     while True:
         if keyboard.is_pressed('z'):
@@ -178,3 +190,4 @@ if __name__=="__main__":
         elif keyboard.is_pressed('d'):
             deplacement.tourner_droite()
         time.sleep(0.1)
+        
