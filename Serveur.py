@@ -88,11 +88,11 @@ class autonome(deplacement, capteur):
             p3 = self.get_p3()
             p4 = self.get_p4()
             
-            if p3 > 100:  # Obstacle droit devant
+            if p3 < 100:  # Obstacle droit devant
                 self.tourner_gauche()
-            elif p2 > 100:  # Obstacle à gauche
+            elif p2 < 100:  # Obstacle à gauche
                 self.tourner_droite()
-            elif p4 > 100:  # Obstacle à droite
+            elif p4 < 100:  # Obstacle à droite
                 self.tourner_gauche()
             else:
                 self.avancer()
