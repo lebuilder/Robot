@@ -14,7 +14,7 @@ ARRIERE : int = 1
 VITESSE_MAX:int = 100
 VITESSE_MIN:int = 25
 
-class robot:
+class deplacement:
     def __init__(self):
         self.vitesse_gauche:int = VITESSE_MAX
         self.vitesse_droite:int = VITESSE_MAX
@@ -47,15 +47,15 @@ class robot:
         
 
 if __name__ == "__main__":
-    Robot = robot()
+    Robot = deplacement()
     
     while True:
         if keyboard.is_pressed('z'):
-            robot.avancer()
+            deplacement.avancer()
         elif keyboard.is_pressed('s'):
-            robot.reculer()
+            deplacement.reculer()
         elif keyboard.is_pressed('q'):
-            robot.tourner_gauche()
+            deplacement.tourner_gauche()
         elif keyboard.is_pressed('d'):
-            robot.tourner_droite()
+            deplacement.tourner_droite()
         time.sleep(0.1)
