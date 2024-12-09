@@ -1,0 +1,37 @@
+Gurvan, Bastien,
+
+En attendant que je trouve une meilleure solution pour la connexion au
+robot, je vous propose de travailler l'aspect réseau.
+Il faudrait :
+1/ développer l'application serveur (sur le robot) qui comportera 3
+classes :
+- classe Reseau : qui gèrera les échanges réseau
+- classe Robot qui gèrera les déplacements du robot ainsi que la lecture
+des données que vous souhaiter.
+- une classe Manager qui gèrera l'ensemble.
+2/ développer l'application cliente avec 2 classes (... ou 3)
+- IHM
+- la classe Reseau qui gèrera les échanges réseau.
+
+Dans la classe Robot, il faut développer plusieurs méthodes :
+- moteurDroit() et moteurGauche() avec la vitesse et le sens en paramètres
+- lectureCapteur() qui retourne les valeurs des capteurs sous a forme
+d'un tuple par exemple.
+
+Il vous faut également définir votre protocole applicatif. Par exemple :
+- pour les déplacement basiques :
+     o mot cle : "DEPLACEMENT",  valeur : "AVANT", "ARRIERE", "DROITE",
+GAUCHE"
+     o mot clé : "VITESSE", valeur : un entier entre 0 et 100
+     o ...
+
+Avec les programmes que je vous ai donnés, vous pouvez tout à fait
+avancer grandement votre projet.
+
+Voici les fonctions à utiliser :
+         motorLeft(sens_gauche:int, vitesse_gauche:int)
+         motorRight(sens_droit:int, vitesse_droite:int)
+
+         p2:int = proxSensor(2)
+         p3:int = proxSensor(3)
+         p4int: = proxSensor(4)
