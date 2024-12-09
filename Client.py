@@ -74,9 +74,11 @@ class Fen_Config(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.configuration)
 
     def configuration(self)-> None:
+        
         self.__fenP.set_addr(self.__entree_adr.get())
         self.__fenP.set_port(int(self.__entree_port.get()))
         self.__fenP.set_lbl_adr_port()
+        
 
 
         self.__fenP.deiconify() # afficher la fenetre principale
