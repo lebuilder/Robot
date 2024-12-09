@@ -46,6 +46,10 @@ class deplacement:
         self.sens_droit = ARRIERE
         motorLeft(self.sens_gauche, self.vitesse_gauche)
         motorRight(self.sens_droit, self.vitesse_droite)
+    
+    def arret(self):
+        motorLeft(0,0)
+        motorRight(0,0)
 
 
 class capteur:
@@ -86,6 +90,11 @@ class autonome(deplacement, capteur):
             else:
                 self.avancer()
             time.sleep(0.1)
+            
+    def arret_autonome(self):
+        self.arret()
+        self.__sortie = True
+        return self.__sortie
 
 
 
