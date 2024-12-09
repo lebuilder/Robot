@@ -48,6 +48,46 @@ class deplacement:
         motorRight(self.sens_droit, self.vitesse_droite)
 
 
+class capteur:
+    
+    """p2:int = proxSensor(2)
+         p3:int = proxSensor(3)
+         p4int: = proxSensor(4)"""
+    
+    def __init__(self):
+        self.__p2:int = proxSensor(2)
+        self.__p3:int = proxSensor(3)
+        self.__p4:int = proxSensor(4)
+        
+    def get_p2(self)->int:
+        return self.__p2
+    
+    def get_p3(self)->int:
+        return self.__p3
+    
+    def get_p4(self)->int:
+        return self.__p4
+
+
+
+class autonome(deplacement, capteur):
+    def __init__(self):
+        deplacement.__init__(self)
+        capteur.__init__(self)
+    
+    def eviter_obstacle(self):
+        while True:
+            if self.get_p2() > 100:
+                self.tourner_gauche()
+            elif self.get_p3() > 100:
+                self.tourner_gauche()
+            elif self.get_p4() > 100:
+                self.tourner_gauche()
+            else:
+                self.avancer()
+            time.sleep(0.1)
+
+
 
 class ServiceEcoute :
     def __init__(self, port_serveur: int) -> None:
@@ -117,6 +157,7 @@ if __name__=="__main__":
 
 
     Robot = deplacement()
+    Capteur = capteur()
         
     while True:
         if keyboard.is_pressed('z'):
