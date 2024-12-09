@@ -16,13 +16,13 @@ class Fen_Principale(Tk):
         self.__btn_quitter:Button
         
         # instanciation / initialisation
-        self.title("fenetre principale")
-        self.__fen = Frame(self, relief="groove")
-        self.__lbl_adr_port = Label(self.__fen)
-        self.__btn_config = Button(self.__fen, text="Configuration", command= lambda : Fen_Config(self))
-        self.__btn_connexion = Button(self.__fen, text="Connexion", command= lambda : Fen_echange(self))                 
-        self.__btn_init = Button(self.__fen,text="Réinitialisation",command=self.init)
-        self.__btn_quitter = Button(self.__fen,text="Quitter",bg="red",command=self.destroy )
+        self.title("fenetre principale") # titre de la fenetre
+        self.__fen = Frame(self, relief="groove") # cadre de la fenetre
+        self.__lbl_adr_port = Label(self.__fen) # label pour l'adresse et le port du serveur
+        self.__btn_config = Button(self.__fen, text="Configuration", command= lambda : Fen_Config(self)) # bouton de pour lancer la fen de configuration
+        self.__btn_connexion = Button(self.__fen, text="Connexion", command= lambda : Fen_echange(self)) # bouton pour lancer la fen d'échange               
+        self.__btn_init = Button(self.__fen,text="Réinitialisation",command=self.init) # bouton de réinitialisation
+        self.__btn_quitter = Button(self.__fen,text="Quitter",bg="red",command=self.destroy ) # bouton pour tout quitter
         self.init() # premier appel pour intialisation de l'adresse
 
         # ajout des widgets
@@ -79,8 +79,6 @@ class Fen_Config(Toplevel):
         self.__fenP.set_port(int(self.__entree_port.get()))
         self.__fenP.set_lbl_adr_port()
         
-
-
         self.__fenP.deiconify() # afficher la fenetre principale
         self.destroy() # detruire la fenetre courante
         
