@@ -1,5 +1,7 @@
 from tkinter import *
 from Client_tcp_class import Client_TCP
+from socket import *
+
 
 class IHM_client_tcp(Tk):
 
