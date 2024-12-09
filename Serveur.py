@@ -54,9 +54,11 @@ class deplacement:
 
 class capteur:
     
-    """p2:int = proxSensor(2)
-         p3:int = proxSensor(3)
-         p4int: = proxSensor(4)"""
+    """
+    p2:int = proxSensor(2)
+    p3:int = proxSensor(3)
+    p4int: = proxSensor(4)
+    """
     
     def __init__(self):
         self.__p2:int = proxSensor(2)
