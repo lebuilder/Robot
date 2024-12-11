@@ -1,9 +1,7 @@
 from socket import *
 import sys
 from mrpiZ_lib import *
-import time, os
-from typing import Tuple
-import keyboard
+import time
 
 
 
@@ -140,26 +138,24 @@ class ServiceEchange :
             commande = tab_octets.decode(encoding="utf-8")
 
             if commande == "z":
-                deplacement.avancer()
+                deplacement.avancer(self)
             elif commande == "s":
-                deplacement.reculer()
+                deplacement.reculer(self)
             elif commande == "q":
-                deplacement.tourner_gauche()
+                deplacement.tourner_gauche(self)
             elif commande == "d":
-                deplacement.tourner_droite()
+                deplacement.tourner_droite(self)
             elif commande == "course_autonome":
-                Course_autonome.course()
+                Course_autonome.course(self)
             elif commande == "arret_course_autonome":
-                Course_autonome.arret_autonome()
+                Course_autonome.arret_autonome(self)
             elif commande == "fin":
-                deplacement.arret()
+                deplacement.arret(self)
                 fin=True
                 
                 
             # envoie données capteurs au client
-            msg_serveur:str = f"distance capteur 2 : {proxSensor(2)}\n
-                                distance capteur 3 : {proxSensor(3)}\n
-                                distance capteur 4 : {proxSensor(4)}\n"
+            msg_serveur:str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
                                 
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
@@ -180,6 +176,7 @@ if __name__=="__main__":
     else:
         port_ecoute=5000
     try:
+        
         service_ecoute=ServiceEcoute(port_ecoute)
         socket_client=service_ecoute.attente()
         service_echange=ServiceEchange(socket_client)
@@ -188,6 +185,6 @@ if __name__=="__main__":
         print("erreur : ", ex)
 
 
-    Robot = deplacement()
-    Capteur = capteur()
-    Course_autonome = autonome()
+    Robot:deplacement = deplacement()
+    Capteur:capteur = capteur()
+    Course_autonome: autonome = autonome()
