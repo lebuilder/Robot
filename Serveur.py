@@ -13,7 +13,7 @@ VITESSE_MAX: int = 100
 VITESSE_MIN: int = 25
 
 class deplacement:
-    def _init_(self):
+    def ___init___(self):
         self.vitesse_gauche: int = VITESSE_MAX
         self.vitesse_droite: int = VITESSE_MAX
         self.sens_gauche: int = AVANT
@@ -22,8 +22,8 @@ class deplacement:
     def avancer(self):
         self.sens_gauche = AVANT
         self.sens_droit = AVANT
-        motorLeft(self.sens_gauche, self.vitesse_gauche)
-        motorRight(self.sens_droit, self.vitesse_droite)
+        motorLeft(self.sens_gauche, 100)
+        motorRight(self.sens_droit, 100)
 
     def reculer(self):
         self.sens_gauche = ARRIERE
@@ -48,8 +48,9 @@ class deplacement:
         motorRight(0, 0)
         return True
 
-class capteur:
-    def _init_(self):
+'''class capteur:
+
+    def __init__(self):
         self.__p2: int = proxSensor(2)
         self.__p3: int = proxSensor(3)
         self.__p4: int = proxSensor(4)
@@ -61,12 +62,12 @@ class capteur:
         return self.__p3
 
     def get_p4(self) -> int:
-        return self.__p4
+        return self.__p4'''
 
-class autonome(deplacement, capteur):
-    def _init_(self):
-        deplacement._init_(self)
-        capteur._init_(self)
+'''class autonome(deplacement, capteur):
+    def __init__(self):
+        deplacement.__init__(self)
+        capteur.__init__(self)
 
     def course(self):
         while True:
@@ -87,10 +88,10 @@ class autonome(deplacement, capteur):
     def arret_autonome(self):
         self.arret()
         self.__sortie = True
-        return self.__sortie
+        return self.__sortie'''
 
 class ServiceEcoute:
-    def _init_(self, port_serveur: int) -> None:
+    def __init__(self, port_serveur: int) -> None:
         self.__socket_ecoute: socket = socket(AF_INET, SOCK_STREAM)
         self.__socket_ecoute.bind(('', port_serveur))
         self.__socket_ecoute.listen(1)
@@ -103,10 +104,10 @@ class ServiceEcoute:
         return client_socket
 
 class ServiceEchange:
-    def _init_(self, socket_echange: socket, robot: deplacement, course_autonome: autonome) -> None:
+    def __init__(self, socket_echange: socket) -> None:
         self.__socket_echange = socket_echange
-        self.robot = robot
-        self.course_autonome = course_autonome
+        self.__robot : deplacement = deplacement()
+        #self.course_autonome = course_autonome
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
@@ -122,27 +123,24 @@ class ServiceEchange:
             commande = tab_octets.decode(encoding="utf-8")
 
             if commande == "z":
-                self.robot.avancer()
+                self.__robot.avancer()
             elif commande == "s":
-                self.robot.reculer()
+                self.__robot.reculer()
             elif commande == "q":
-                self.robot.tourner_gauche()
+                self.__robot.tourner_gauche()
             elif commande == "d":
-                self.robot.tourner_droite()
-            elif commande == "course_autonome":
-                self.course_autonome.course()
-            elif commande == "arret_course_autonome":
-                self.course_autonome.arret_autonome()
+                self.__robot.tourner_droite()
             elif commande == "fin":
-                self.robot.arret()
+                self.__robot.arret()
                 fin = True
             elif commande == "c":
-                capteur.get_p2(self)
+                pass
+                #capteur.get_p2(self)
 
             # envoie données capteurs au client
-            msg_serveur: str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
-            tab_octets = msg_serveur.encode(encoding="utf-8")
-            self.__socket_echange.send(tab_octets)
+            #msg_serveur: str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
+            #tab_octets = msg_serveur.encode(encoding="utf-8")
+            #self.__socket_echange.send(tab_octets)
 
     def arret(self) -> None:
         self.__socket_echange.close()
@@ -150,8 +148,8 @@ class ServiceEchange:
 if __name__ == "__main__":
     # declaration des variables
     Robot = deplacement()
-    Capteur = capteur()
-    Course_autonome = autonome()
+    #Capteur = capteur()
+    #Course_autonome = autonome()
     port_ecoute: int = None
     service_ecoute: ServiceEcoute = None
     socket_client: socket = None
@@ -164,7 +162,7 @@ if __name__ == "__main__":
     try:
         service_ecoute = ServiceEcoute(port_ecoute)
         socket_client = service_ecoute.attente()
-        service_echange = ServiceEchange(socket_client, Robot, Course_autonome)
+        service_echange = ServiceEchange(socket_client)
         service_echange.echange()
     except Exception as ex:
         print("erreur : ", ex)
