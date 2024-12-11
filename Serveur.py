@@ -157,9 +157,7 @@ class ServiceEchange :
                 
                 
             # envoie données capteurs au client
-            msg_serveur:str = f"distance capteur 2 : {proxSensor(2)}\n
-                                distance capteur 3 : {proxSensor(3)}\n
-                                distance capteur 4 : {proxSensor(4)}\n"
+            msg_serveur:str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
                                 
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
