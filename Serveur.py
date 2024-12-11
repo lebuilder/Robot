@@ -147,7 +147,7 @@ class ServiceEchange:
     def arret(self) -> None:
         self.__socket_echange.close()
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     # declaration des variables
     Robot = deplacement()
     Capteur = capteur()
