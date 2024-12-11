@@ -18,6 +18,7 @@ class IHM_client_tcp(Tk):
         self.__label_port: Label
         self.__entree_port_serveur: Entry
         self.__btn_connexion: Button
+        self.__btn_Configuration: Button
         self.__client_tcp:Client_TCP
 
         self.__fen_echange: Frame
@@ -34,6 +35,7 @@ class IHM_client_tcp(Tk):
         self.__label_port = Label(self.__fen_connexion, text="port serveur")
         self.__entree_port_serveur = Entry(self.__fen_connexion, width=15)
         self.__btn_connexion = Button(self.__fen_connexion, text = "connexion", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
+        self.__btn_Configuration = Button(self.__fen_connexion, text = "Configuration", font= (self.POLICE,self.TAILLE_POLICE), command= lambda : Fen_Config(self))
 
         self.__fen_echange = Frame(self, relief="groove")
         self.__entree_msg_client = Entry(self.__fen_echange, width=15) 
@@ -48,6 +50,7 @@ class IHM_client_tcp(Tk):
         self.__label_port.grid(row=1, column=0)
         self.__entree_port_serveur.grid(row=1, column=1)
         self.__btn_connexion.grid(row=0, column=2)
+        self.__btn_Configuration.grid(row=1, column=2)
 
         self.__fen_echange.pack()
         self.__entree_msg_client.grid(row=0, column=0)
@@ -57,7 +60,11 @@ class IHM_client_tcp(Tk):
 
         self.mainloop()
         
-    
+    #modificateur
+    def set_addr(self,addr:str)->None:
+        self.__entree_ip_serveur = addr
+    def set_port(self,port:int)->None:
+        self.__entree_port_serveur = port
         
     def connexion(self)-> None:
         try:
@@ -107,6 +114,44 @@ class IHM_client_tcp(Tk):
             # fermer l’application
             self.destroy()
             self.__client_tcp.arret()
+            
+class Fen_Config(Toplevel):
+    def __init__(self, fenP:IHM_client_tcp)-> None:
+        Toplevel.__init__(self)
+        self.__fenP = fenP# memorisation de la fenètre principale, accès aux méthodes
+        # declaration
+        self.__lbl_adr:Label
+        self.__entree_adr:Entry
+        self.__lbl_port:Label
+        self.__entree_port:Entry
+        self.__btn_retour:Button
+
+        # instantiation / initialisation
+        self.__fenP.withdraw() # effacer fenetre principale
+        self.title("config")
+        self.__lbl_adr = Label(self, text="adr serveur")
+        self.__entree_adr = Entry(self,width=15)
+        self.__entree_adr.insert(0,"127.0.0.1")
+        self.__lbl_port = Label(self,text="port serveur")
+        self.__entree_port = Entry(self,width= 5)
+        self.__entree_port.insert(0,"5000")
+        self.__btn_retour = Button(self,text="Retour", command= self.configuration)
+        # ajout des widgets
+        self.__lbl_adr.grid(row= 0,column= 0)
+        self.__entree_adr.grid(row=0,column= 1)
+        self.__lbl_port.grid(row=1,column= 0)
+        self.__entree_port.grid(row=1,column= 1)
+        self.__btn_retour.grid(row=2,column=0)
+        # evenements
+        self.protocol("WM_DELETE_WINDOW", self.configuration)
+
+    def configuration(self)-> None:
+        self.__fenP.set_addr(self.__entree_adr.get())
+        self.__fenP.set_port(int(self.__entree_port.get()))
+        
+
+        self.__fenP.deiconify() # afficher la fenetre principale
+        self.destroy() # detruire la fenetre courante
 
 if __name__ == "__main__":
     ihm: IHM_client_tcp = IHM_client_tcp()
