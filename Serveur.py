@@ -1,6 +1,6 @@
 from socket import *
 import sys
-from mrpiZ_lib import *
+#from mrpiZ_lib import *
 import time
 
 A_GAUCHE: int = 1
