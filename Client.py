@@ -40,7 +40,7 @@ class IHM_client_tcp(Tk):
         self.__entree_ip_serveur = Entry(self.__fen_connexion, width=15)
         self.__label_port = Label(self.__fen_connexion, text="port serveur")
         self.__entree_port_serveur = Entry(self.__fen_connexion, width=15)
-        self.__btn_connexion = Button(self.__fen_connexion, text = "connexion", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
+        self.__btn_connexion = Button(self.__fen_connexion, text = "connexion",bg="green", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
         self.__btn_Configuration = Button(self.__fen_connexion, text = "Configuration", font= (self.POLICE,self.TAILLE_POLICE), command= lambda : Fen_Config(self))
 
         self.__fen_echange = Frame(self,borderwidth=10, relief="groove")
