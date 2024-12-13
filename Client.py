@@ -55,7 +55,7 @@ class IHM_client_tcp(Tk):
         self.__btn_RN = Button(self.__fen_echange, text = "droite",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
         
         #ajout des widget
-        self.title("echange avec le robot")
+        self.title("echange avec le robot 13 ")
         self.__fen_connexion.pack()
         self.__label_ip.grid(row=0, column=0)
         self.__entree_ip_serveur.grid(row=0, column=1)
@@ -75,6 +75,8 @@ class IHM_client_tcp(Tk):
         self.__btn_reculer.grid(row=4, column=1)
         self.mainloop()
         
+        self.protocol("WM_DELETE_WINDOW", self.quitter)
+        
     #modificateur
     def set_addr(self, addr: str) -> None:
         self.__entree_ip_serveur.config(text=addr)
@@ -85,7 +87,7 @@ class IHM_client_tcp(Tk):
         
     def connexion(self)-> None:
         try:
-            print("connexion en cours")
+            print("connexion au Robot 13 en cours ...")
             ip_serveur: str = self.__entree_ip_serveur.cget("text")
             port_serveur: int = int(self.__entree_port_serveur.cget("text"))
             # instanciation du client TCP
@@ -94,9 +96,9 @@ class IHM_client_tcp(Tk):
             # connexion au serveur
             self.__client_tcp.connexion()
             
-            print("connexion ok")
+            print("connexion au robot 13 : ok")
         except Exception as ex:
-            print("erreur de connexion : ", ex)
+            print("erreur de connexion au robot 13  : ", ex)
         else:
             # désactiver le bouton de connexion
             self.__btn_connexion.configure(state='disabled')
@@ -149,11 +151,11 @@ class Fen_Config(Toplevel):
 
         # instantiation / initialisation
         self.__fenP.withdraw() # effacer fenetre principale
-        self.title("config")
-        self.__lbl_adr = Label(self, text="addresse du Robot")
+        self.title("configuration du client ")
+        self.__lbl_adr = Label(self, text="addresse du Robot :")
         self.__entree_adr = Entry(self,width=15)
         self.__entree_adr.insert(0,"10.15.141.1")
-        self.__lbl_port = Label(self,text="port du Robot")
+        self.__lbl_port = Label(self,text="port du Robot : ")
         self.__entree_port = Entry(self,width= 5)
         self.__entree_port.insert(0,"5000")
         self.__btn_retour = Button(self,text="Retour", command= self.configuration)
