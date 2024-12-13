@@ -26,6 +26,12 @@ class IHM_client_tcp(Tk):
         self.__btn_envoyer: Button
         self.__text_msg_serveur: Text
         self.__btn_quitter: Button
+        
+        
+        self.__btn_avancer: Button
+        self.__btn_reculer: Button
+        self.__btn_LFI: Button
+        self.__btn_RN: Button
 
         #instanciation
         
@@ -43,6 +49,11 @@ class IHM_client_tcp(Tk):
         self.__text_msg_serveur = Entry(self.__fen_echange, width=15 )
         self.__btn_quitter = Button(self.__fen_echange, text = "quitter",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="red", command= self.quitter)
 
+        self.__btn_avancer = Button(self.__fen_echange, text = "avancer",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
+        self.__btn_reculer = Button(self.__fen_echange, text = "reculer",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
+        self.__btn_LFI = Button(self.__fen_echange, text = "gauche",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
+        self.__btn_RN = Button(self.__fen_echange, text = "droite",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
+        
         #ajout des widget
         self.__fen_connexion.pack()
         self.__label_ip.grid(row=0, column=0)
@@ -57,14 +68,20 @@ class IHM_client_tcp(Tk):
         self.__btn_envoyer.grid(row=0, column=1)
         self.__text_msg_serveur.grid(row=1, column=0)
         self.__btn_quitter.grid(row=1, column=1)
-
+        self.__btn_avancer.grid(row=2, column=1)
+        self.__btn_LFI.grid(row=3, column=0)
+        self.__btn_RN.grid(row=3, column=2)
+        self.__btn_reculer.grid(row=4, column=1)
         self.mainloop()
         
     #modificateur
-    def set_addr(self,addr:str)->None:
-        self.__entree_ip_serveur = addr
-    def set_port(self,port:int)->None:
-        self.__entree_port_serveur = port
+    def set_addr(self, addr: str) -> None:
+        self.__entree_ip_serveur.delete(0, END)
+        self.__entree_ip_serveur.insert(0, addr)
+
+    def set_port(self, port: int) -> None:
+        self.__entree_port_serveur.delete(0, END)
+        self.__entree_port_serveur.insert(0, port)
         
     def connexion(self)-> None:
         try:
@@ -87,7 +104,10 @@ class IHM_client_tcp(Tk):
             # activer les boutons pour envoyer un message et pour quitter
             self.__btn_envoyer.configure(state='active')
             self.__btn_quitter.configure(state='active')
-            pass
+            self.__btn_avancer.configure(state='active')
+            self.__btn_reculer.configure(state='active')
+            self.__btn_LFI.configure(state='active')
+            self.__btn_RN.configure(state='active')
         
     def envoyer(self)-> None:
         msg = self.__entree_msg_client.get()
