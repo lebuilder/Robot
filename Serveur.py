@@ -124,14 +124,24 @@ class ServiceEchange:
 
             if commande == "z":
                 self.__robot.avancer()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
             elif commande == "s":
                 self.__robot.reculer()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
             elif commande == "q":
                 self.__robot.tourner_gauche()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
             elif commande == "d":
                 self.__robot.tourner_droite()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
             elif commande == "fin":
                 self.__robot.arret()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
                 fin = True
             elif commande == "c":
                 pass
