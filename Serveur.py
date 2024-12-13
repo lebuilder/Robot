@@ -3,6 +3,7 @@ import sys
 import mrpiZ
 import time
 
+
 A_GAUCHE: int = 1
 A_DROITE: int = -1
 
