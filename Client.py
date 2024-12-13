@@ -86,10 +86,10 @@ class IHM_client_tcp(Tk):
     def connexion(self)-> None:
         try:
             print("connexion en cours")
-            ip_serveur:str= self.__entree_ip_serveur.get()
-            port_serveur:int= int(self.__entree_port_serveur.get())
+            ip_serveur: str = self.__entree_ip_serveur.cget("text")
+            port_serveur: int = int(self.__entree_port_serveur.cget("text"))
             # instanciation du client TCP
-            self.__client_tcp= Client_TCP(ip_serveur, port_serveur)
+            self.__client_tcp = Client_TCP(ip_serveur, port_serveur)
             
             # connexion au serveur
             self.__client_tcp.connexion()
