@@ -1,6 +1,6 @@
 
 #!/usr/bin/python
-from mrpiZ_lib import *
+from mrpiZ import *
 import time, os
 from typing import Tuple
 import keyboard
