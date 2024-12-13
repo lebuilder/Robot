@@ -13,7 +13,7 @@ VITESSE_MAX: int = 100
 VITESSE_MIN: int = 25
 
 class deplacement:
-    def ___init___(self):
+    def __init__(self):
         self.vitesse_gauche: int = VITESSE_MAX
         self.vitesse_droite: int = VITESSE_MAX
         self.sens_gauche: int = AVANT
