@@ -14,9 +14,9 @@ class IHM_client_tcp(Tk):
 
         self.__fen_connexion: Frame
         self.__label_ip: Label
-        self.__entree_ip_serveur: Entry
+        self.__entree_ip_serveur: Label
         self.__label_port: Label
-        self.__entree_port_serveur: Entry
+        self.__entree_port_serveur: Label
         self.__btn_connexion: Button
         self.__btn_Configuration: Button
         self.__client_tcp:Client_TCP
@@ -37,13 +37,13 @@ class IHM_client_tcp(Tk):
         
         self.__fen_connexion = Frame(self, borderwidth=10, relief="groove")
         self.__label_ip = Label(self.__fen_connexion, text = "ip serveur", font=(self.POLICE,self.TAILLE_POLICE))
-        self.__entree_ip_serveur = Entry(self.__fen_connexion, width=15)
+        self.__entree_ip_serveur = Label(self.__fen_connexion, width=15, text="XXX.XXX.XXX.XXX")
         self.__label_port = Label(self.__fen_connexion, text="port serveur")
-        self.__entree_port_serveur = Entry(self.__fen_connexion, width=15)
-        self.__btn_connexion = Button(self.__fen_connexion, text = "connexion", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
+        self.__entree_port_serveur = Label(self.__fen_connexion, width=15, text="XXXX")
+        self.__btn_connexion = Button(self.__fen_connexion, text = "connexion",bg="green", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
         self.__btn_Configuration = Button(self.__fen_connexion, text = "Configuration", font= (self.POLICE,self.TAILLE_POLICE), command= lambda : Fen_Config(self))
 
-        self.__fen_echange = Frame(self, relief="groove")
+        self.__fen_echange = Frame(self,borderwidth=10, relief="groove")
         self.__entree_msg_client = Entry(self.__fen_echange, width=15) 
         self.__btn_envoyer = Button(self.__fen_echange, text = "envoyer",state='disabled', font= (self.POLICE,self.TAILLE_POLICE),bg='blue', command= self.envoyer)
         self.__text_msg_serveur = Entry(self.__fen_echange, width=15 )
@@ -55,6 +55,7 @@ class IHM_client_tcp(Tk):
         self.__btn_RN = Button(self.__fen_echange, text = "droite",state='disabled', font= (self.POLICE,self.TAILLE_POLICE), bg="yellow" )
         
         #ajout des widget
+        self.title("echange avec le robot")
         self.__fen_connexion.pack()
         self.__label_ip.grid(row=0, column=0)
         self.__entree_ip_serveur.grid(row=0, column=1)
@@ -76,12 +77,11 @@ class IHM_client_tcp(Tk):
         
     #modificateur
     def set_addr(self, addr: str) -> None:
-        self.__entree_ip_serveur.delete(0, END)
-        self.__entree_ip_serveur.insert(0, addr)
+        self.__entree_ip_serveur.config(text=addr)
 
     def set_port(self, port: int) -> None:
-        self.__entree_port_serveur.delete(0, END)
-        self.__entree_port_serveur.insert(0, port)
+        self.__entree_port_serveur.config(text=str(port))
+        
         
     def connexion(self)-> None:
         try:
@@ -100,6 +100,7 @@ class IHM_client_tcp(Tk):
         else:
             # désactiver le bouton de connexion
             self.__btn_connexion.configure(state='disabled')
+            self.__btn_Configuration.configure(state='disabled')
             
             # activer les boutons pour envoyer un message et pour quitter
             self.__btn_envoyer.configure(state='active')
@@ -149,10 +150,10 @@ class Fen_Config(Toplevel):
         # instantiation / initialisation
         self.__fenP.withdraw() # effacer fenetre principale
         self.title("config")
-        self.__lbl_adr = Label(self, text="adr serveur")
+        self.__lbl_adr = Label(self, text="addresse du Robot")
         self.__entree_adr = Entry(self,width=15)
-        self.__entree_adr.insert(0,"127.0.0.1")
-        self.__lbl_port = Label(self,text="port serveur")
+        self.__entree_adr.insert(0,"10.15.141.1")
+        self.__lbl_port = Label(self,text="port du Robot")
         self.__entree_port = Entry(self,width= 5)
         self.__entree_port.insert(0,"5000")
         self.__btn_retour = Button(self,text="Retour", command= self.configuration)
