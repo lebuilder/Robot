@@ -14,9 +14,9 @@ class IHM_client_tcp(Tk):
 
         self.__fen_connexion: Frame
         self.__label_ip: Label
-        self.__entree_ip_serveur: Entry
+        self.__entree_ip_serveur: Label
         self.__label_port: Label
-        self.__entree_port_serveur: Entry
+        self.__entree_port_serveur: Label
         self.__btn_connexion: Button
         self.__btn_Configuration: Button
         self.__client_tcp:Client_TCP
@@ -37,9 +37,9 @@ class IHM_client_tcp(Tk):
         
         self.__fen_connexion = Frame(self, borderwidth=10, relief="groove")
         self.__label_ip = Label(self.__fen_connexion, text = "ip serveur", font=(self.POLICE,self.TAILLE_POLICE))
-        self.__entree_ip_serveur = Entry(self.__fen_connexion, width=15)
+        self.__entree_ip_serveur = Label(self.__fen_connexion, width=15, text="XXX.XXX.XXX.XXX")
         self.__label_port = Label(self.__fen_connexion, text="port serveur")
-        self.__entree_port_serveur = Entry(self.__fen_connexion, width=15)
+        self.__entree_port_serveur = Label(self.__fen_connexion, width=15, text="XXXX")
         self.__btn_connexion = Button(self.__fen_connexion, text = "connexion",bg="green", font= (self.POLICE,self.TAILLE_POLICE), command=  self.connexion)
         self.__btn_Configuration = Button(self.__fen_connexion, text = "Configuration", font= (self.POLICE,self.TAILLE_POLICE), command= lambda : Fen_Config(self))
 
@@ -77,12 +77,11 @@ class IHM_client_tcp(Tk):
         
     #modificateur
     def set_addr(self, addr: str) -> None:
-        self.__entree_ip_serveur.delete(0, END)
-        self.__entree_ip_serveur.insert(0, addr)
+        self.__entree_ip_serveur.config(text=addr)
 
     def set_port(self, port: int) -> None:
-        self.__entree_port_serveur.delete(0, END)
-        self.__entree_port_serveur.insert(0, port)
+        self.__entree_port_serveur.config(text=str(port))
+        
         
     def connexion(self)-> None:
         try:
