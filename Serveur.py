@@ -1,6 +1,6 @@
 from socket import *
 import sys
-import mrpiZ_lib
+import mrpiZ
 import time
 
 A_GAUCHE: int = 1
@@ -22,42 +22,42 @@ class deplacement:
     def avancer(self):
         self.sens_gauche = AVANT
         self.sens_droit = AVANT
-        mrpiZ_lib.motorLeft(self.sens_gauche, 100)
-        mrpiZ_lib.motorRight(self.sens_droit, 100)
+        mrpiZ.motorLeft(self.sens_gauche, 100)
+        mrpiZ.motorRight(self.sens_droit, 100)
         time.sleep(0.01)
-        mrpiZ_lib.motorLeft(0, 0)
-        mrpiZ_lib.motorRight(0, 0)
+        mrpiZ.motorLeft(0, 0)
+        mrpiZ.motorRight(0, 0)
 
     def reculer(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = ARRIERE
-        mrpiZ_lib.motorLeft(self.sens_gauche, self.vitesse_gauche)
-        mrpiZ_lib.motorRight(self.sens_droit, self.vitesse_droite)
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
         time.sleep(0.01)
-        mrpiZ_lib.motorLeft(0, 0)
-        mrpiZ_lib.motorRight(0, 0)
+        mrpiZ.motorLeft(0, 0)
+        mrpiZ.motorRight(0, 0)
 
     def tourner_gauche(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = AVANT
-        mrpiZ_lib.motorLeft(self.sens_gauche, self.vitesse_gauche)
-        mrpiZ_lib.motorRight(self.sens_droit, self.vitesse_droite)
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
         time.sleep(0.01)
-        mrpiZ_lib.motorLeft(0, 0)
-        mrpiZ_lib.motorRight(0, 0)
+        mrpiZ.motorLeft(0, 0)
+        mrpiZ.motorRight(0, 0)
 
     def tourner_droite(self):
         self.sens_gauche = AVANT
         self.sens_droit = ARRIERE
-        mrpiZ_lib.motorLeft(self.sens_gauche, self.vitesse_gauche)
-        mrpiZ_lib.motorRight(self.sens_droit, self.vitesse_droite)
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
         time.sleep(0.01)
-        mrpiZ_lib.motorLeft(0, 0)
-        mrpiZ_lib.motorRight(0, 0)
+        mrpiZ.motorLeft(0, 0)
+        mrpiZ.motorRight(0, 0)
 
     def arret(self):
-        mrpiZ_lib.motorLeft(0, 0)
-        mrpiZ_lib.motorRight(0, 0)
+        mrpiZ.motorLeft(0, 0)
+        mrpiZ.motorRight(0, 0)
         return True
 
 '''class capteur:
