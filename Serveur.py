@@ -23,50 +23,38 @@ class deplacement:
     def avancer(self):
         self.sens_gauche = AVANT
         self.sens_droit = AVANT
-        mrpiZ.motorLeft(self.sens_gauche, 100)
-        mrpiZ.motorRight(self.sens_droit, 100)
-        time.sleep(0.01)
-        mrpiZ.motorLeft(0, 0)
-        mrpiZ.motorRight(0, 0)
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
 
     def reculer(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = ARRIERE
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
-        time.sleep(0.01)
-        mrpiZ.motorLeft(0, 0)
-        mrpiZ.motorRight(0, 0)
 
     def tourner_gauche(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = AVANT
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
-        time.sleep(0.01)
-        mrpiZ.motorLeft(0, 0)
-        mrpiZ.motorRight(0, 0)
 
     def tourner_droite(self):
         self.sens_gauche = AVANT
         self.sens_droit = ARRIERE
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
-        time.sleep(0.01)
-        mrpiZ.motorLeft(0, 0)
-        mrpiZ.motorRight(0, 0)
 
     def arret(self):
         mrpiZ.motorLeft(0, 0)
         mrpiZ.motorRight(0, 0)
         return True
 
-'''class capteur:
+class capteur:
 
     def __init__(self):
-        self.__p2: int = proxSensor(2)
-        self.__p3: int = proxSensor(3)
-        self.__p4: int = proxSensor(4)
+        self.__p2: int = mrpiZ.proxSensor(2)
+        self.__p3: int = mrpiZ.proxSensor(3)
+        self.__p4: int = mrpiZ.proxSensor(4)
 
     def get_p2(self) -> int:
         return self.__p2
@@ -75,9 +63,12 @@ class deplacement:
         return self.__p3
 
     def get_p4(self) -> int:
-        return self.__p4'''
+        return self.__p4
 
-'''class autonome(deplacement, capteur):
+    def get_all(self) -> list[float]:
+        return [self.__p2, self.__p3, self.__p4]
+
+class autonome(deplacement, capteur):
     def __init__(self):
         deplacement.__init__(self)
         capteur.__init__(self)
@@ -101,7 +92,22 @@ class deplacement:
     def arret_autonome(self):
         self.arret()
         self.__sortie = True
-        return self.__sortie'''
+        return self.__sortie
+    
+    
+class Option:
+    def __init__(self) -> None:
+        self.__batterie: float = mrpiZ.battery()
+        #self.__ledRGB = mrpiZ.ledRGB(rouge, vert, bleu)
+        
+    def get_batterie(self) -> float:
+        return self.__batterie
+    
+''' def get_ledRGB(self) -> list[int]:
+        return self.__ledRGB
+    
+    def set_ledRGB(self, rouge: int, vert: int, bleu: int) -> None:
+        mrpiZ.ledRGB(rouge, vert, bleu)'''
 
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
@@ -120,6 +126,8 @@ class ServiceEchange:
     def __init__(self, socket_echange: socket) -> None:
         self.__socket_echange = socket_echange
         self.__robot : deplacement = deplacement()
+        self.__option : Option = Option()
+        #self.capteur = capteur
         #self.course_autonome = course_autonome
 
     def envoyer(self, msg: str) -> None:
@@ -156,9 +164,8 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 fin = True
-            elif commande == "c":
-                pass
-                #capteur.get_p2(self)
+            '''elif commande == "battery":
+                self.__option.get_batterie()'''
 
             # envoie données capteurs au client
             #msg_serveur: str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
@@ -183,6 +190,14 @@ if __name__ == "__main__":
     else:
         port_ecoute = 5000
     try:
+        # Initialiser la LED RGB avec les couleurs du drapeau français
+        led = Option(0, 0, 0)  # Initialiser avec des valeurs par défaut
+        led.set_ledRGB(0, 0, 255)  # Bleu
+        time.sleep(1)
+        led.set_ledRGB(255, 255, 255)  # Blanc
+        time.sleep(1)
+        led.set_ledRGB(255, 0, 0)  # Rouge
+        time.sleep(1)
         service_ecoute = ServiceEcoute(port_ecoute)
         socket_client = service_ecoute.attente()
         service_echange = ServiceEchange(socket_client)
