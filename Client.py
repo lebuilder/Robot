@@ -34,6 +34,11 @@ class IHM_client_tcp(Tk):
         self.__btn_reculer: Button
         self.__btn_LFI: Button
         self.__btn_RN: Button
+        self.__label_mode: Label
+        self.__label_status: Label
+        self.__btn_auto: Button
+
+        self.mode_auto: bool = False
 
         # instanciation
         self.__fen_connexion = ttk.Frame(self, padding=10)
@@ -47,13 +52,16 @@ class IHM_client_tcp(Tk):
         self.__fen_echange = ttk.Frame(self, padding=10)
         self.__entree_msg_client = ttk.Entry(self.__fen_echange, width=15)
         self.__btn_envoyer = ttk.Button(self.__fen_echange, text="Envoyer", state='disabled', command=self.envoyer)
-        self.__text_msg_serveur = ttk.Entry(self.__fen_echange, width=15)
+        #self.__text_msg_serveur = ttk.Entry(self.__fen_echange, width=15)
         self.__btn_quitter = ttk.Button(self.__fen_echange, text="Quitter", state='disabled', command=self.quitter)
 
         self.__btn_avancer = ttk.Button(self.__fen_echange, text="Avancer", state='disabled', command=lambda: self.envoyer_commande("avancer"))
         self.__btn_reculer = ttk.Button(self.__fen_echange, text="Reculer", state='disabled', command=lambda: self.envoyer_commande("reculer"))
         self.__btn_LFI = ttk.Button(self.__fen_echange, text="Gauche", state='disabled', command=lambda: self.envoyer_commande("gauche"))
         self.__btn_RN = ttk.Button(self.__fen_echange, text="Droite", state='disabled', command=lambda: self.envoyer_commande("droite"))
+        self.__label_mode = ttk.Label(self.__fen_echange, text="Mode: Manuel", font=(self.POLICE, self.TAILLE_POLICE))
+        self.__label_status = ttk.Label(self.__fen_echange, text="", font=(self.POLICE, self.TAILLE_POLICE))
+        self.__btn_auto = ttk.Button(self.__fen_echange, text="Mode Auto", command=self.toggle_mode)
 
         # ajout des widgets
         self.title("Échange avec le robot 13")
@@ -68,12 +76,15 @@ class IHM_client_tcp(Tk):
         self.__fen_echange.pack()
         self.__entree_msg_client.grid(row=0, column=0)
         self.__btn_envoyer.grid(row=0, column=1)
-        self.__text_msg_serveur.grid(row=1, column=0)
+        #self.__text_msg_serveur.grid(row=1, column=0)
         self.__btn_quitter.grid(row=1, column=1)
         self.__btn_avancer.grid(row=2, column=1)
         self.__btn_LFI.grid(row=3, column=0)
         self.__btn_RN.grid(row=3, column=2)
         self.__btn_reculer.grid(row=4, column=1)
+        self.__label_mode.grid(row=5, column=0, columnspan=2)
+        self.__btn_auto.grid(row=5, column=2)
+        self.__label_status.grid(row=6, column=0, columnspan=3)
         self.mainloop()
 
         self.protocol("WM_DELETE_WINDOW", self.quitter)
@@ -84,6 +95,9 @@ class IHM_client_tcp(Tk):
 
     def set_port(self, port: int) -> None:
         self.__entree_port_serveur.config(text=str(port))
+
+    def set_mode(self, mode: str) -> None:
+        self.__label_mode.config(text=f"Mode: {mode}")
 
     def connexion(self) -> None:
         try:
@@ -123,6 +137,14 @@ class IHM_client_tcp(Tk):
     def envoyer_commande(self, commande: str) -> None:
         self.__client_tcp.envoyer(msg=commande)
         chaine = self.__client_tcp.recevoir()
+        if commande == "avancer":
+            self.__label_status.config(text="Le robot avance")
+        elif commande == "reculer":
+            self.__label_status.config(text="Le robot recule")
+        elif commande == "gauche":
+            self.__label_status.config(text="Le robot tourne à gauche")
+        elif commande == "droite":
+            self.__label_status.config(text="Le robot tourne à droite")
         self.__text_msg_serveur.insert(INSERT, chaine + "\n")
 
     def quitter(self) -> None:
@@ -143,6 +165,16 @@ class IHM_client_tcp(Tk):
             self.destroy()
             self.__client_tcp.arret()
 
+    def toggle_mode(self) -> None:
+        if self.mode_auto:
+            self.set_mode("Manuel")
+            self.__client_tcp.envoyer("mode manuel")
+            self.__btn_auto.config(text="Mode Auto")
+        else:
+            self.set_mode("Automatique")
+            self.__client_tcp.envoyer("mode automatique")
+            self.__btn_auto.config(text="Mode Manuel")
+        self.mode_auto = not self.mode_auto
 
 class Fen_Config(Toplevel):
     def __init__(self, fenP: IHM_client_tcp) -> None:
