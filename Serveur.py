@@ -2,6 +2,7 @@ from socket import *
 import sys
 import mrpiZ
 import time
+import threading
 
 
 A_GAUCHE: int = 1
@@ -126,9 +127,8 @@ class ServiceEchange:
     def __init__(self, socket_echange: socket) -> None:
         self.__socket_echange = socket_echange
         self.__robot : deplacement = deplacement()
-        self.__option : Option = Option()
-        #self.capteur = capteur
-        #self.course_autonome = course_autonome
+        #self.__option : Option = Option()
+        self.__course_autonome : autonome = autonome()
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
@@ -159,18 +159,27 @@ class ServiceEchange:
                 self.__robot.tourner_droite()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+            elif commande == "a":
+                threading.Thread(target=self.__course_autonome.course).start()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+                self.__socket_echange.send(tab_octets)
             elif commande == "fin":
                 self.__robot.arret()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 fin = True
-            '''elif commande == "battery":
-                self.__option.get_batterie()'''
+            elif commande == "fin_autonome":
+                self.__course_autonome.arret_autonome()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+                fin = True
 
             # envoie données capteurs au client
-            #msg_serveur: str = f"distance capteur 2 : {proxSensor(2)}\n distance capteur 3 : {proxSensor(3)}\n distance capteur 4 : {proxSensor(4)}\n"
-            #tab_octets = msg_serveur.encode(encoding="utf-8")
-            #self.__socket_echange.send(tab_octets)
+            msg_serveur: str = f"distance capteur 2 : {mrpiZ.proxSensor(2)}\n distance capteur 3 : {mrpiZ.proxSensor(3)}\n distance capteur 4 : {mrpiZ.proxSensor(4)}\n"
+            tab_octets = msg_serveur.encode(encoding="utf-8")
+            self.__socket_echange.send(tab_octets)
+            msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"
 
     def arret(self) -> None:
         self.__socket_echange.close()
@@ -190,14 +199,14 @@ if __name__ == "__main__":
     else:
         port_ecoute = 5000
     try:
-        # Initialiser la LED RGB avec les couleurs du drapeau français
+        '''# Initialiser la LED RGB avec les couleurs du drapeau français
         led = Option(0, 0, 0)  # Initialiser avec des valeurs par défaut
         led.set_ledRGB(0, 0, 255)  # Bleu
         time.sleep(1)
         led.set_ledRGB(255, 255, 255)  # Blanc
         time.sleep(1)
         led.set_ledRGB(255, 0, 0)  # Rouge
-        time.sleep(1)
+        time.sleep(1)'''
         service_ecoute = ServiceEcoute(port_ecoute)
         socket_client = service_ecoute.attente()
         service_echange = ServiceEchange(socket_client)
