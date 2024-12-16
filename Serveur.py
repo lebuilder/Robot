@@ -143,23 +143,23 @@ class ServiceEchange:
             tab_octets = self.__socket_echange.recv(1024)
             commande = tab_octets.decode(encoding="utf-8")
 
-            if commande == "z":
+            if commande == "avancer":
                 self.__robot.avancer()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-            elif commande == "s":
+            elif commande == "reculer":
                 self.__robot.reculer()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-            elif commande == "q":
+            elif commande == "gauche":
                 self.__robot.tourner_gauche()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-            elif commande == "d":
+            elif commande == "droite":
                 self.__robot.tourner_droite()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-            elif commande == "a":
+            elif commande == "mode autonome":
                 threading.Thread(target=self.__course_autonome.course).start()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
@@ -169,7 +169,7 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 fin = True
-            elif commande == "fin_autonome":
+            elif commande == "mode manuel":
                 self.__course_autonome.arret_autonome()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
