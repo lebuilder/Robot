@@ -67,7 +67,7 @@ class capteur:
         return self.__p4
 
     def get_all(self) -> list[float]:
-        return [self.__p2, self.__p3, self.__p4]
+        return [mrpiZ.proxSensor(2), mrpiZ.proxSensor(3), mrpiZ.proxSensor(4)]
 
 class autonome(deplacement, capteur):
     def __init__(self):
@@ -75,20 +75,22 @@ class autonome(deplacement, capteur):
         capteur.__init__(self)
 
     def course(self):
-        while True:
-            p2 = self.get_p2()
-            p3 = self.get_p3()
-            p4 = self.get_p4()
+        '''p2 = self.get_p2()
+        p3 = self.get_p3()
+        p4 = self.get_p4()'''
+        
+        p2 = mrpiZ.proxSensor(2)
+        p3 = mrpiZ.proxSensor(3)
+        p4 = mrpiZ.proxSensor(4)
 
-            if p3 < 100:  # Obstacle droit devant
-                self.tourner_gauche()
-            elif p2 < 100:  # Obstacle à gauche
-                self.tourner_droite()
-            elif p4 < 100:  # Obstacle à droite
-                self.tourner_gauche()
-            else:
-                self.avancer()
-            time.sleep(0.01)
+        if p3 < 100:  # Obstacle droit devant
+            self.tourner_gauche()
+        elif p2 < 100:  # Obstacle à gauche
+            self.tourner_droite()
+        elif p4 < 100:  # Obstacle à droite
+            self.tourner_gauche()
+        else:
+            self.avancer()
 
     def arret_autonome(self):
         self.arret()
@@ -127,8 +129,9 @@ class ServiceEchange:
     def __init__(self, socket_echange: socket) -> None:
         self.__socket_echange = socket_echange
         self.__robot : deplacement = deplacement()
-        #self.__option : Option = Option()
+        self.__option : Option = Option()
         self.__course_autonome : autonome = autonome()
+        self.__capteur : capteur = capteur()
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
@@ -159,27 +162,36 @@ class ServiceEchange:
                 self.__robot.tourner_droite()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-            elif commande == "mode autonome":
-                threading.Thread(target=self.__course_autonome.course).start()
-                tab_octets = commande.encode("utf-8")
-                self.__socket_echange.send(tab_octets)
-                self.__socket_echange.send(tab_octets)
+            elif commande == "mode automatique":
+                self.__course_autonome.course()
             elif commande == "fin":
                 self.__robot.arret()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-                fin = True
             elif commande == "mode manuel":
                 self.__course_autonome.arret_autonome()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
-                fin = True
+            elif commande == "stop":
+                self.__robot.arret()
+                self.__course_autonome.arret_autonome()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+            elif commande == "capteur":
+                tab_octets = self.__capteur.get_all()
+                tab_octets = str(tab_octets).encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+            elif commande == "bat":
+                tab_octets = self.__option.get_batterie()
+                tab_octets = str(tab_octets).encode("utf-8")
+                self.__socket_echange.send(tab_octets)
 
             # envoie données capteurs au client
-            msg_serveur: str = f"distance capteur 2 : {mrpiZ.proxSensor(2)}\n distance capteur 3 : {mrpiZ.proxSensor(3)}\n distance capteur 4 : {mrpiZ.proxSensor(4)}\n"
+            '''msg_serveur: str = f"distance capteur 2 : {mrpiZ.proxSensor(2)}\n distance capteur 3 : {mrpiZ.proxSensor(3)}\n distance capteur 4 : {mrpiZ.proxSensor(4)}\n"
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
-            msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"
+            msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"'''
+            
 
     def arret(self) -> None:
         self.__socket_echange.close()
