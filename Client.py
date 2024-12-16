@@ -13,6 +13,7 @@ class IHM_client_tcp(Tk):
         Tk.__init__(self)
         self.style = ttk.Style(self)
         self.style.theme_use('clam')  # Use a modern theme
+        self.configure(background="light grey")
 
         # déclaration des références d'objets
         self.__fen_connexion: Frame
@@ -36,7 +37,10 @@ class IHM_client_tcp(Tk):
         self.__label_mode: Label
         self.__label_status: Label
         self.__label_status_Capteur: Label
+        self.__label_status_Baterrie: Label
         self.__btn_auto: Button
+        self.__btn_capteur: Button
+        self.__btn_bat: Button
 
         self.mode_auto: bool = False
         
@@ -45,8 +49,8 @@ class IHM_client_tcp(Tk):
         # instanciation
         self.__fen_connexion = ttk.Frame(self, padding=10)
         self.__label_ip = ttk.Label(self.__fen_connexion, text="IP Serveur", font=(self.POLICE, self.TAILLE_POLICE))
-        self.__entree_ip_serveur = ttk.Label(self.__fen_connexion, width=15, text="XXX.XXX.XXX.XXX")
-        self.__label_port = ttk.Label(self.__fen_connexion, text="Port Serveur")
+        self.__entree_ip_serveur = ttk.Label(self.__fen_connexion, width=20, text="XXX.XXX.XXX.XXX")
+        self.__label_port = ttk.Label(self.__fen_connexion, text="Port Serveur", font=(self.POLICE, self.TAILLE_POLICE))
         self.__entree_port_serveur = ttk.Label(self.__fen_connexion, width=15, text="XXXX")
         self.__btn_connexion = ttk.Button(self.__fen_connexion, text="Connexion", command=self.connexion)
         self.__btn_Configuration = ttk.Button(self.__fen_connexion, text="Configuration", command=lambda: Fen_Config(self))
@@ -61,11 +65,14 @@ class IHM_client_tcp(Tk):
         self.__btn_RN = ttk.Button(self.__fen_echange, text="Droite", state='disabled', command=lambda: self.envoyer_commande("droite"))
         self.__btn_auto = ttk.Button(self.__fen_echange, text="Mode Auto", command=self.toggle_mode)
         self.__btn_stop = ttk.Button(self.__fen_echange, text="Arret", state='disabled', command=lambda: self.envoyer_commande("stop"))
+        self.__btn_capteur = ttk.Button(self.__fen_echange, text="Demander Capteurs", state='disabled', command=self.demander_capteurs)
+        self.__btn_bat = ttk.Button(self.__fen_echange, text="Demander baterrie", state='disabled', command=self.demander_Baterrie)
 
         self.__fen_info = ttk.Frame(self, padding=10)
         self.__label_status = ttk.Label(self.__fen_info, text="", font=(self.POLICE, self.TAILLE_POLICE))
-        self.__label_mode = ttk.Label(self.__fen_info, text="Mode: Manuel", font=(self.POLICE, self.TAILLE_POLICE))
+        self.__label_mode = ttk.Label(self.__fen_info, text="Mode : Manuel", font=(self.POLICE, self.TAILLE_POLICE))
         self.__label_status_Capteur = ttk.Label(self.__fen_info, text="", font=(self.POLICE, self.TAILLE_POLICE))
+        self.__label_status_Baterrie = ttk.Label(self.__fen_info, text="", font=(self.POLICE, self.TAILLE_POLICE))
 
         # ajout des widgets
         self.title("Échange avec le robot 13")
@@ -86,11 +93,14 @@ class IHM_client_tcp(Tk):
         self.__btn_reculer.grid(row=4, column=1, padx=5, pady=5)
         self.__btn_stop.grid(row=3, column=1, padx=5, pady=5)
         self.__btn_auto.grid(row=5, column=2, padx=5, pady=5)
+        self.__btn_capteur.grid(row=5, column=1, padx=5, pady=5)
+        self.__btn_bat.grid(row=5, column=0, padx=5, pady=5)
         
         self.__fen_info.pack(pady=10)
         self.__label_status.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
         self.__label_mode.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
         self.__label_status_Capteur.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+        self.__label_status_Baterrie.grid(row=2,column=0, columnspan=3, padx=5, pady=5)
         self.mainloop()
 
         self.protocol("WM_DELETE_WINDOW", self.quitter)
@@ -134,6 +144,8 @@ class IHM_client_tcp(Tk):
             self.__btn_LFI.configure(state='active')
             self.__btn_RN.configure(state='active')
             self.__btn_stop.configure(state='active')
+            self.__btn_capteur.configure(state='active')
+            self.__btn_bat.configure(state='active')
 
     def envoyer(self) -> None:
         msg = self.__entree_msg_client.get()
@@ -156,6 +168,16 @@ class IHM_client_tcp(Tk):
             self.__label_status.config(text="Le robot tourne à droite")
         self.__text_msg_serveur.insert(INSERT, chaine + "\n")
 
+    def demander_capteurs(self) -> None:
+        self.__client_tcp.envoyer("capteur")
+        chaine = self.__client_tcp.recevoir()
+        self.__label_status_Capteur.config(text=chaine)
+
+    def demander_Baterrie(self) -> None:
+        self.__client_tcp.envoyer("bat")
+        chaine = self.__client_tcp.recevoir()
+        self.__label_status_Capteur.config(text=chaine)
+
     def quitter(self) -> None:
         try:
             # envoyer le mot cle "fin" au serveur
@@ -163,7 +185,7 @@ class IHM_client_tcp(Tk):
 
             # attendre la reponse du serveur
             reponse = self.__client_tcp.recevoir()
-            print("Réponse du serveur:", reponse)
+            print("Réponse du serveur :", reponse)
 
             # appeler la méthode arret() du client TCP
             self.__client_tcp.arret()
@@ -184,9 +206,6 @@ class IHM_client_tcp(Tk):
             self.__client_tcp.envoyer("mode automatique")
             self.__btn_auto.config(text="Mode Manuel")
         self.mode_auto = not self.mode_auto
-        
-    
-
 
 class Fen_Config(Toplevel):
     def __init__(self, fenP: IHM_client_tcp) -> None:
