@@ -74,23 +74,23 @@ class autonome(deplacement, capteur):
         deplacement.__init__(self)
         capteur.__init__(self)
 
-    def course(self):
+    def course(self, arret: bool):
         '''p2 = self.get_p2()
         p3 = self.get_p3()
         p4 = self.get_p4()'''
-        
-        p2 = mrpiZ.proxSensor(2)
-        p3 = mrpiZ.proxSensor(3)
-        p4 = mrpiZ.proxSensor(4)
+        while not arret:
+            p2 = mrpiZ.proxSensor(2)
+            p3 = mrpiZ.proxSensor(3)
+            p4 = mrpiZ.proxSensor(4)
 
-        if p3 < 100:  # Obstacle droit devant
-            self.tourner_gauche()
-        elif p2 < 100:  # Obstacle à gauche
-            self.tourner_droite()
-        elif p4 < 100:  # Obstacle à droite
-            self.tourner_gauche()
-        else:
-            self.avancer()
+            if p3 < 100:  # Obstacle droit devant
+                self.tourner_gauche()
+            elif p2 < 100:  # Obstacle à gauche
+                self.tourner_droite()
+            elif p4 < 100:  # Obstacle à droite
+                self.tourner_gauche()
+            else:
+                self.avancer()
 
     def arret_autonome(self):
         self.arret()
@@ -163,13 +163,15 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "mode automatique":
-                self.__course_autonome.course()
+                self.__course_autonome.course(True)
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
             elif commande == "fin":
                 self.__robot.arret()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "mode manuel":
-                self.__course_autonome.arret_autonome()
+                self.__course_autonome.course(self.__course_autonome.arret_autonome())
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "stop":
