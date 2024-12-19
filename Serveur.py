@@ -48,7 +48,6 @@ class deplacement:
     def arret(self):
         mrpiZ.motorLeft(0, 0)
         mrpiZ.motorRight(0, 0)
-        return True
 
 class capteur:
 
@@ -78,7 +77,7 @@ class autonome(deplacement, capteur):
         '''p2 = self.get_p2()
         p3 = self.get_p3()
         p4 = self.get_p4()'''
-        while not arret:
+        while arret:
             p2 = mrpiZ.proxSensor(2)
             p3 = mrpiZ.proxSensor(3)
             p4 = mrpiZ.proxSensor(4)
@@ -94,7 +93,7 @@ class autonome(deplacement, capteur):
 
     def arret_autonome(self):
         self.arret()
-        self.__sortie = True
+        self.__sortie = False
         return self.__sortie
     
     
@@ -176,7 +175,7 @@ class ServiceEchange:
                 self.__socket_echange.send(tab_octets)
             elif commande == "stop":
                 self.__robot.arret()
-                self.__course_autonome.arret_autonome()
+                self.__course_autonome.course(self.__course_autonome.arret_autonome())
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "capteur":
