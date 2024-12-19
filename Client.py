@@ -46,6 +46,9 @@ class IHM_client_tcp(Tk):
         
         self.__fen_info: Frame
 
+        self.capteur_active = False
+        self.batterie_active = False
+
         # instanciation
         self.__fen_connexion = ttk.Frame(self, padding=10)
         self.__label_ip = ttk.Label(self.__fen_connexion, text="IP Serveur", font=(self.POLICE, self.TAILLE_POLICE))
@@ -169,14 +172,36 @@ class IHM_client_tcp(Tk):
         self.__text_msg_serveur.insert(INSERT, chaine + "\n")
 
     def demander_capteurs(self) -> None:
-        self.__client_tcp.envoyer("capteur")
-        chaine = self.__client_tcp.recevoir()
-        self.__label_status_Capteur.config(text=chaine)
+        if not self.capteur_active:
+            self.capteur_active = True
+            self.__btn_capteur.config(text="Arrêter Capteurs")
+            self.update_capteurs()
+        else:
+            self.capteur_active = False
+            self.__btn_capteur.config(text="Demander Capteurs")
+
+    def update_capteurs(self) -> None:
+        if self.capteur_active:
+            self.__client_tcp.envoyer("capteur")
+            chaine = self.__client_tcp.recevoir()
+            self.__label_status_Capteur.config(text=f"valeur capteur : {chaine}")
+            self.after(1000, self.update_capteurs)  # Update every second
 
     def demander_Baterrie(self) -> None:
-        self.__client_tcp.envoyer("bat")
-        chaine = self.__client_tcp.recevoir()
-        self.__label_status_Capteur.config(text=chaine)
+        if not self.batterie_active:
+            self.batterie_active = True
+            self.__btn_bat.config(text="Arrêter Batterie")
+            self.update_batterie()
+        else:
+            self.batterie_active = False
+            self.__btn_bat.config(text="Demander Batterie")
+
+    def update_batterie(self) -> None:
+        if self.batterie_active:
+            self.__client_tcp.envoyer("bat")
+            chaine = self.__client_tcp.recevoir()
+            self.__label_status_Baterrie.config(text=f"valeur baterrie : {chaine}")
+            self.after(1000, self.update_batterie)  # Update every second
 
     def quitter(self) -> None:
         try:
