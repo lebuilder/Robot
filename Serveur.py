@@ -169,13 +169,15 @@ class ServiceEchange:
                 self.__robot.arret()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                fin = True
+                self.__course_autonome.course(self.__course_autonome.arret_autonome())
             elif commande == "mode manuel":
                 self.__course_autonome.course(self.__course_autonome.arret_autonome())
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "stop":
                 self.__robot.arret()
-                self.__course_autonome.course(self.__course_autonome.arret_autonome())
+                
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "capteur":
