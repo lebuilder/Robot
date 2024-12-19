@@ -66,7 +66,7 @@ class IHM_client_tcp(Tk):
         self.__btn_reculer = ttk.Button(self.__fen_echange, text="Reculer", state='disabled', command=lambda: self.envoyer_commande("reculer"))
         self.__btn_LFI = ttk.Button(self.__fen_echange, text="Gauche", state='disabled', command=lambda: self.envoyer_commande("gauche"))
         self.__btn_RN = ttk.Button(self.__fen_echange, text="Droite", state='disabled', command=lambda: self.envoyer_commande("droite"))
-        self.__btn_auto = ttk.Button(self.__fen_echange, text="Mode Auto", command=self.toggle_mode)
+        self.__btn_auto = ttk.Button(self.__fen_echange, state='disabled',text="Mode Auto", command=self.toggle_mode)
         self.__btn_stop = ttk.Button(self.__fen_echange, text="Arret", state='disabled', command=lambda: self.envoyer_commande("stop"))
         self.__btn_capteur = ttk.Button(self.__fen_echange, text="Demander Capteurs", state='disabled', command=self.demander_capteurs)
         self.__btn_bat = ttk.Button(self.__fen_echange, text="Demander baterrie", state='disabled', command=self.demander_Baterrie)
@@ -149,6 +149,7 @@ class IHM_client_tcp(Tk):
             self.__btn_stop.configure(state='active')
             self.__btn_capteur.configure(state='active')
             self.__btn_bat.configure(state='active')
+            self.__btn_auto.configure(state='active')
 
     def envoyer(self) -> None:
         msg = self.__entree_msg_client.get()
