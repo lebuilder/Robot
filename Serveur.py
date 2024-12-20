@@ -4,7 +4,6 @@ import mrpiZ
 import time
 import threading
 
-
 A_GAUCHE: int = 1
 A_DROITE: int = -1
 
@@ -50,7 +49,6 @@ class deplacement:
         mrpiZ.motorRight(0, 0)
 
 class capteur:
-
     def __init__(self):
         self.__p2: int = mrpiZ.proxSensor(2)
         self.__p3: int = mrpiZ.proxSensor(3)
@@ -72,12 +70,11 @@ class autonome(deplacement, capteur):
     def __init__(self):
         deplacement.__init__(self)
         capteur.__init__(self)
+        self.__arret = threading.Event()
+        self.__thread = None
 
-    def course(self, arret: bool):
-        '''p2 = self.get_p2()
-        p3 = self.get_p3()
-        p4 = self.get_p4()'''
-        while arret:
+    def course(self):
+        while not self.__arret.is_set():
             p2 = mrpiZ.proxSensor(2)
             p3 = mrpiZ.proxSensor(3)
             p4 = mrpiZ.proxSensor(4)
@@ -90,13 +87,19 @@ class autonome(deplacement, capteur):
                 self.tourner_gauche()
             else:
                 self.avancer()
+            time.sleep(0.01)
+
+    def start_course(self):
+        self.__arret.clear()
+        self.__thread = threading.Thread(target=self.course)
+        self.__thread.start()
 
     def arret_autonome(self):
+        self.__arret.set()
+        if self.__thread is not None:
+            self.__thread.join()
         self.arret()
-        self.__sortie = False
-        return self.__sortie
-    
-    
+
 class Option:
     def __init__(self) -> None:
         self.__batterie: float = mrpiZ.battery()
@@ -162,7 +165,7 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "mode automatique":
-                self.__course_autonome.course(True)
+                self.__course_autonome.start_course()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "fin":
@@ -170,14 +173,14 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 fin = True
-                self.__course_autonome.course(self.__course_autonome.arret_autonome())
+                self.__course_autonome.arret_autonome()
             elif commande == "mode manuel":
-                self.__course_autonome.course(self.__course_autonome.arret_autonome())
+                self.__course_autonome.arret_autonome()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "stop":
                 self.__robot.arret()
-                
+                self.__course_autonome.arret_autonome()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "capteur":
@@ -194,7 +197,6 @@ class ServiceEchange:
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
             msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"'''
-            
 
     def arret(self) -> None:
         self.__socket_echange.close()
