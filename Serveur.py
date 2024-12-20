@@ -10,13 +10,14 @@ A_DROITE: int = -1
 AVANT: int = 0
 ARRIERE: int = 1
 
-VITESSE_MAX: int = 100
+VITESSE_MAX_gauche: float = 99.25
+VITESSE_MAX_droite: int = 100
 VITESSE_MIN: int = 25
 
 class deplacement:
     def __init__(self):
-        self.vitesse_gauche: int = VITESSE_MAX
-        self.vitesse_droite: int = VITESSE_MAX
+        self.vitesse_gauche: int = VITESSE_MAX_gauche
+        self.vitesse_droite: int = VITESSE_MAX_droite
         self.sens_gauche: int = AVANT
         self.sens_droit: int = AVANT
 
@@ -75,18 +76,24 @@ class autonome(deplacement, capteur):
 
     def course(self):
         while not self.__arret.is_set():
-            p2 = mrpiZ.proxSensor(2)
-            p3 = mrpiZ.proxSensor(3)
-            p4 = mrpiZ.proxSensor(4)
-
-            if p3 < 100:  # Obstacle droit devant
-                self.tourner_gauche()
-            elif p2 < 100:  # Obstacle à gauche
-                self.tourner_droite()
-            elif p4 < 100:  # Obstacle à droite
-                self.tourner_gauche()
-            else:
-                self.avancer()
+            try:
+                p2 = mrpiZ.proxSensor(2)
+                p3 = mrpiZ.proxSensor(3)
+                p4 = mrpiZ.proxSensor(4)
+                
+                if p4 < 30 and p3 < 40 and p2 < 30:
+                    self.reculer()
+                    self.tourner_droite()
+                elif p3 < 50:  # Obstacle droit devant
+                    self.tourner_gauche()
+                elif p2 < 50:  # Obstacle à gauche
+                    self.tourner_droite()
+                elif p4 < 50:  # Obstacle à droite
+                    self.tourner_gauche()
+                else:
+                    self.avancer()
+            except serial.SerialException as e:
+                print(f"Erreur de lecture du port série: {e}")
             time.sleep(0.01)
 
     def start_course(self):
