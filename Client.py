@@ -5,11 +5,13 @@ from socket import *
 
 
 class IHM_client_tcp(Tk):
+    
 
     POLICE: str = "times"
     TAILLE_POLICE: int = 12
 
     def __init__(self):
+        
         Tk.__init__(self)
         self.style = ttk.Style(self)
         self.style.theme_use('clam')  # Use a modern theme
@@ -109,20 +111,62 @@ class IHM_client_tcp(Tk):
         self.protocol("WM_DELETE_WINDOW", self.quitter)
 
     def action_evt(self, evt: Event) -> None:
+        """
+        Gérer les événements.
+        
+        Paramètres:
+        evt (Event): L'événement à gérer.
+        
+        Retourne:
+        None
+        """
         print(evt)
 
     # modificateur
     def set_addr(self, addr: str) -> None:
+        """
+        Définir l'adresse IP du serveur.
+        
+        Paramètres:
+        addr (str): L'adresse IP à définir.
+        
+        Retourne:
+        None
+        """
         self.__entree_ip_serveur.config(text=addr)
 
     def set_port(self, port: int) -> None:
+        """
+        Définir le port du serveur.
+        
+        Paramètres:
+        port (int): Le numéro de port à définir.
+        
+        Retourne:
+        None
+        """
         self.__entree_port_serveur.config(text=str(port))
 
     def set_mode(self, mode: str) -> None:
+        """
+        Définir le mode (Manuel ou Automatique).
+        
+        Paramètres:
+        mode (str): Le mode à définir ("Manuel" ou "Automatique").
+        
+        Retourne:
+        None
+        """
         self.__label_mode.config(text=f"Mode: {mode}")
         
 
     def connexion(self) -> None:
+        """
+        Se connecter au serveur du robot.
+        
+        Retourne:
+        None
+        """
         try:
             print("Connexion au Robot 13 en cours ...")
             ip_serveur: str = self.__entree_ip_serveur.cget("text")
@@ -153,6 +197,12 @@ class IHM_client_tcp(Tk):
             self.__btn_auto.configure(state='active')
 
     def envoyer(self) -> None:
+        """
+        Envoyer un message au serveur.
+        
+        Retourne:
+        None
+        """
         msg = self.__entree_msg_client.get()
         if msg != "":
             self.__entree_msg_client.delete(0, END)
@@ -161,6 +211,15 @@ class IHM_client_tcp(Tk):
             self.__text_msg_serveur.insert(INSERT, chaine + "\n")
 
     def envoyer_commande(self, commande: str) -> None:
+        """
+        Envoyer une commande au robot.
+        
+        Paramètres:
+        commande (str): La commande à envoyer ("avancer", "reculer", "gauche", "droite", "stop").
+        
+        Retourne:
+        None
+        """
         self.__client_tcp.envoyer(msg=commande)
         chaine = self.__client_tcp.recevoir()
         if commande == "avancer":
@@ -174,6 +233,12 @@ class IHM_client_tcp(Tk):
         self.__text_msg_serveur.insert(INSERT, chaine + "\n")
 
     def demander_capteurs(self) -> None:
+        """
+        Basculer les demandes continues de données des capteurs.
+        
+        Retourne:
+        None
+        """
         if not self.capteur_active:
             self.capteur_active = True
             self.__btn_capteur.config(text="Arrêter Capteurs")
@@ -183,13 +248,25 @@ class IHM_client_tcp(Tk):
             self.__btn_capteur.config(text="Demander Capteurs")
 
     def update_capteurs(self) -> None:
+        """
+        Demander des données de capteurs au serveur toutes les secondes.
+        
+        Retourne:
+        None
+        """
         if self.capteur_active:
             self.__client_tcp.envoyer("capteur")
             cap = self.__client_tcp.recevoir()
             self.__label_status_Capteur.config(text=f"valeur capteur : {cap}")
-            self.after(1000, self.update_capteurs)  # demande toutes les secondes pour savoir se qui se passe
+            self.after(1000, self.update_capteurs)
 
     def demander_Baterrie(self) -> None:
+        """
+        Basculer les demandes continues de données de la batterie.
+        
+        Retourne:
+        None
+        """
         if not self.batterie_active:
             self.batterie_active = True
             self.__btn_bat.config(text="Arrêter Batterie")
@@ -199,13 +276,25 @@ class IHM_client_tcp(Tk):
             self.__btn_bat.config(text="Demander Batterie")
 
     def update_batterie(self) -> None:
+        """
+        Demander des données de la batterie au serveur toutes les secondes.
+        
+        Retourne:
+        None
+        """
         if self.batterie_active:
             self.__client_tcp.envoyer("bat")
             bat = self.__client_tcp.recevoir()
             self.__label_status_Baterrie.config(text=f"valeur baterrie : {bat}")
-            self.after(1000, self.update_batterie)  # demande toutes les secondes pour savoir ou on en ai niveau batterie
+            self.after(1000, self.update_batterie)
 
     def quitter(self) -> None:
+        """
+        Se déconnecter du serveur et fermer l'application.
+        
+        Retourne:
+        None
+        """
         try:
             # envoyer le mot cle "fin" au serveur
             self.__client_tcp.envoyer("fin")
@@ -224,6 +313,12 @@ class IHM_client_tcp(Tk):
             self.__client_tcp.arret()
 
     def auto_mode(self) -> None:
+        """
+        Basculer entre le mode manuel et automatique.
+        
+        Retourne:
+        None
+        """
         if self.mode_auto:
             self.set_mode("Manuel")
             self.__client_tcp.envoyer("mode manuel")
@@ -235,7 +330,13 @@ class IHM_client_tcp(Tk):
         self.mode_auto = not self.mode_auto
 
 class Fen_Config(Toplevel):
+    """
+    Configuration window for setting the robot's IP address and port.
+    """
     def __init__(self, fenP: IHM_client_tcp) -> None:
+        """
+        Initialize the configuration window.
+        """
         Toplevel.__init__(self)
         self.__fenP = fenP  # memorisation de la fenètre principale, accès aux méthodes
         # declaration
@@ -265,6 +366,12 @@ class Fen_Config(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.configuration)
 
     def configuration(self) -> None:
+        """
+        Appliquer la configuration et revenir à la fenêtre principale.
+        
+        Retourne:
+        None
+        """
         self.__fenP.set_addr(self.__entree_adr.get())
         self.__fenP.set_port(int(self.__entree_port.get()))
 
