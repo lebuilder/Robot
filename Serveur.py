@@ -75,34 +75,30 @@ class autonome(deplacement, capteur):
         self.__thread = None
 
     def course(self):
-        while not self.__arret.is_set():
-            try:
-                p2 = mrpiZ.proxSensor(2)
-                p3 = mrpiZ.proxSensor(3)
-                p4 = mrpiZ.proxSensor(4)
-                
-                if p4 < 30 and p3 < 40 and p2 < 30:
-                    self.reculer()
-                    self.tourner_droite()
-                elif p3 < 50:  # Obstacle droit devant
-                    self.tourner_gauche()
-                elif p2 < 50:  # Obstacle à gauche
-                    self.tourner_droite()
-                elif p4 < 50:  # Obstacle à droite
-                    self.tourner_gauche()
-                else:
-                    self.avancer()
-            except serial.SerialException as e:
-                print(f"Erreur de lecture du port série: {e}")
-            time.sleep(0.01)
+        while not self.__arret:
+            p2: int = mrpiZ.proxSensor(2)
+            p3: int = mrpiZ.proxSensor(3)
+            p4: int = mrpiZ.proxSensor(4)
+            
+            if p4 < 30 and p3 < 50 and p2 < 30:
+                self.reculer()
+                self.tourner_droite()
+            elif p3 < 50:  # Obstacle droit devant
+                self.tourner_gauche()
+            elif p2 < 50:  # Obstacle à gauche
+                self.tourner_droite()
+            elif p4 < 50:  # Obstacle à droite
+                self.tourner_gauche()
+            else:
+                self.avancer()
 
     def start_course(self):
-        self.__arret.clear()
+        self.__arret = False
         self.__thread = threading.Thread(target=self.course)
         self.__thread.start()
 
     def arret_autonome(self):
-        self.__arret.set()
+        self.__arret = True
         if self.__thread is not None:
             self.__thread.join()
         self.arret()
