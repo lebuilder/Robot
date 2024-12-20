@@ -322,6 +322,7 @@ class IHM_client_tcp(Tk):
     def auto_mode(self) -> None:
         """
         Basculer entre le mode manuel et automatique.
+        avec activation ou désactivation des boutton qui ne son pas utile en mode automatique 
 
         Retourne:
         None
@@ -330,10 +331,20 @@ class IHM_client_tcp(Tk):
             self.set_mode("Manuel")
             self.__client_tcp.envoyer("mode manuel")
             self.__btn_auto.config(text="Mode Auto")
+            self.__btn_envoyer.configure(state='active')
+            self.__btn_avancer.configure(state='active')
+            self.__btn_reculer.configure(state='active')
+            self.__btn_LFI.configure(state='active')
+            self.__btn_RN.configure(state='active')
         else:
             self.set_mode("Automatique")
             self.__client_tcp.envoyer("mode automatique")
             self.__btn_auto.config(text="Mode Manuel")
+            self.__btn_envoyer.configure(state='disabled')
+            self.__btn_avancer.configure(state='disabled')
+            self.__btn_reculer.configure(state='disabled')
+            self.__btn_LFI.configure(state='disabled')
+            self.__btn_RN.configure(state='disabled')
         self.mode_auto = not self.mode_auto
 
     def save_log(self, message: str) -> None:
