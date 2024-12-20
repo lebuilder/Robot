@@ -66,7 +66,7 @@ class IHM_client_tcp(Tk):
         self.__btn_reculer = ttk.Button(self.__fen_echange, text="Reculer", state='disabled', command=lambda: self.envoyer_commande("reculer"))
         self.__btn_LFI = ttk.Button(self.__fen_echange, text="Gauche", state='disabled', command=lambda: self.envoyer_commande("gauche"))
         self.__btn_RN = ttk.Button(self.__fen_echange, text="Droite", state='disabled', command=lambda: self.envoyer_commande("droite"))
-        self.__btn_auto = ttk.Button(self.__fen_echange, state='disabled',text="Mode Auto", command=self.toggle_mode)
+        self.__btn_auto = ttk.Button(self.__fen_echange, state='disabled',text="Mode Auto", command=self.auto_mode)
         self.__btn_stop = ttk.Button(self.__fen_echange, text="Arret", state='disabled', command=lambda: self.envoyer_commande("stop"))
         self.__btn_capteur = ttk.Button(self.__fen_echange, text="Demander Capteurs", state='disabled', command=self.demander_capteurs)
         self.__btn_bat = ttk.Button(self.__fen_echange, text="Demander baterrie", state='disabled', command=self.demander_Baterrie)
@@ -120,6 +120,7 @@ class IHM_client_tcp(Tk):
 
     def set_mode(self, mode: str) -> None:
         self.__label_mode.config(text=f"Mode: {mode}")
+        
 
     def connexion(self) -> None:
         try:
@@ -184,15 +185,15 @@ class IHM_client_tcp(Tk):
     def update_capteurs(self) -> None:
         if self.capteur_active:
             self.__client_tcp.envoyer("capteur")
-            chaine = self.__client_tcp.recevoir()
-            self.__label_status_Capteur.config(text=f"valeur capteur : {chaine}")
-            self.after(1000, self.update_capteurs)  # Update every second
+            cap = self.__client_tcp.recevoir()
+            self.__label_status_Capteur.config(text=f"valeur capteur : {cap}")
+            self.after(1000, self.update_capteurs)  # demande toutes les secondes pour savoir se qui se passe
 
     def demander_Baterrie(self) -> None:
         if not self.batterie_active:
             self.batterie_active = True
             self.__btn_bat.config(text="Arrêter Batterie")
-            self.update_batterie()
+            self.update_batterie() 
         else:
             self.batterie_active = False
             self.__btn_bat.config(text="Demander Batterie")
@@ -200,9 +201,9 @@ class IHM_client_tcp(Tk):
     def update_batterie(self) -> None:
         if self.batterie_active:
             self.__client_tcp.envoyer("bat")
-            chaine = self.__client_tcp.recevoir()
-            self.__label_status_Baterrie.config(text=f"valeur baterrie : {chaine}")
-            self.after(1000, self.update_batterie)  # Update every second
+            bat = self.__client_tcp.recevoir()
+            self.__label_status_Baterrie.config(text=f"valeur baterrie : {bat}")
+            self.after(1000, self.update_batterie)  # demande toutes les secondes pour savoir ou on en ai niveau batterie
 
     def quitter(self) -> None:
         try:
@@ -222,7 +223,7 @@ class IHM_client_tcp(Tk):
             self.destroy()
             self.__client_tcp.arret()
 
-    def toggle_mode(self) -> None:
+    def auto_mode(self) -> None:
         if self.mode_auto:
             self.set_mode("Manuel")
             self.__client_tcp.envoyer("mode manuel")
