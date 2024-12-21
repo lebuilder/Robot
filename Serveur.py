@@ -67,10 +67,8 @@ class capteur:
     def get_all(self) -> list[float]:
         return [mrpiZ.proxSensor(2), mrpiZ.proxSensor(3), mrpiZ.proxSensor(4)]
 
-class autonome(deplacement, capteur):
+class autonome:
     def __init__(self):
-        deplacement.__init__(self)
-        capteur.__init__(self)
         self.__arret = threading.Event()
         self.__thread = None
 
@@ -80,17 +78,18 @@ class autonome(deplacement, capteur):
             p3: int = mrpiZ.proxSensor(3)
             p4: int = mrpiZ.proxSensor(4)
             
-            if p4 < 30 and p3 < 50 and p2 < 30:
+            if p4 < 40 and p3 < 40 and p2 < 40:
                 self.reculer()
-                self.tourner_droite()
+                time.sleep(1)
+                deplacement.tourner_droite()
             elif p3 < 50:  # Obstacle droit devant
-                self.tourner_gauche()
+                deplacement.tourner_gauche()
             elif p2 < 50:  # Obstacle à gauche
-                self.tourner_droite()
+                deplacement.tourner_droite()
             elif p4 < 50:  # Obstacle à droite
-                self.tourner_gauche()
+                deplacement.tourner_gauche()
             else:
-                self.avancer()
+                deplacement.avancer()
 
     def start_course(self):
         self.__arret = False
@@ -101,7 +100,7 @@ class autonome(deplacement, capteur):
         self.__arret = True
         if self.__thread is not None:
             self.__thread.join()
-        self.arret()
+        deplacement.arret()
 
 class Option:
     def __init__(self) -> None:
