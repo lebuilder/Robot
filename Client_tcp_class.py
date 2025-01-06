@@ -11,10 +11,16 @@ class Client_TCP:
         try:
             self.__socket_echange = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.__socket_echange.connect((self.__ip_serveur, self.__port_serveur))
+            
             print(f"Connecter au serveur : {self.__ip_serveur} sur le port : {self.__port_serveur}")
+            
         except Exception as ex:
             print("Erreur de connexion:", ex)
             self.arret()
+    
+    def get_ip(self) -> str:
+        return self.__socket_echange.getsockname()
+    
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.sendall(msg.encode())

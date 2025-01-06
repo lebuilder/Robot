@@ -1,4 +1,4 @@
-# FICHIer CLient PROJET POO 
+# FICHIER Client PROJET POO 
 # Fichier client pour communiquer avec le robot 13 via un serveur TCP.
 # Fait par Gurvan MURY et Bastien BENIS le 06/01/2025
 from tkinter import *
@@ -182,7 +182,10 @@ class IHM_client_tcp(Tk):
             # connexion au serveur
             self.__client_tcp.connexion()
 
-            self.logs["ip"] = ip_serveur
+            self.logs["IP Serveur"] = ip_serveur
+            self.logs["Port Serveur"] = port_serveur
+            self.logs["IP Client"] = self.__client_tcp.get_ip()[0]
+            self.logs["Port Client"] = self.__client_tcp.get_ip[1]
 
             print("Connexion au robot 13 : ok")
         except Exception as ex:
