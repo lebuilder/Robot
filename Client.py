@@ -184,8 +184,7 @@ class IHM_client_tcp(Tk):
 
             self.logs["IP Serveur"] = ip_serveur
             self.logs["Port Serveur"] = port_serveur
-            self.logs["IP Client"] = self.__client_tcp.get_ip()[0]
-            self.logs["Port Client"] = self.__client_tcp.get_ip[1]
+            self.logs["IP Client"] = self.__client_tcp.get_ip()
 
             print("Connexion au robot 13 : ok")
         except Exception as ex:
