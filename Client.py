@@ -1,3 +1,6 @@
+# FICHIer CLient PROJET POO 
+# Fichier client pour communiquer avec le robot 13 via un serveur TCP.
+# Fait par Gurvan MURY et Bastien BENIS le 06/01/2025
 from tkinter import *
 from tkinter import ttk
 from Client_tcp_class import Client_TCP
