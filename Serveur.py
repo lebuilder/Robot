@@ -69,14 +69,14 @@ class capteur:
 
 class autonome:
     def __init__(self):
-        self.__arret : bool = False
+        self.__arret = threading.Event()
         self.__thread = None
         self.__deplacement = deplacement()
         self.__capteur = capteur()
         self.__list_capteurs = list()
 
     def course(self):
-        while self.__arret:
+        while not self.__arret.is_set():
             self.__list_capteurs = self.__capteur.get_all()
             p2: int = self.__list_capteurs[0]
             p3: int = self.__list_capteurs[1]
@@ -102,7 +102,7 @@ class autonome:
         self.__thread.start()
 
     def arret_autonome(self):
-        self.__arret = True
+        self.__arret.set()
         if self.__thread is not None:
             self.__thread.join()
             self.__thread = None
@@ -113,13 +113,37 @@ class autonome:
     
     def get_all_autonome(self) -> list[int]:
         return self.__list_capteurs
-    
+
 class Option:
     def __init__(self) -> None:
         self.__batterie: float = mrpiZ.battery()
         
     def get_batterie(self) -> float:
         return self.__batterie
+
+class LedRGB:
+    def __init__(self):
+        self.__thread = None
+        self.__arret = threading.Event()
+
+    def changer_couleur(self):
+        while not self.__arret.is_set():
+            mrpiZ.ledRGB(0, 0, 255)  # Bleu
+            time.sleep(1)
+            mrpiZ.ledRGB(255, 255, 255)  # Blanc
+            time.sleep(1)
+            mrpiZ.ledRGB(255, 0, 0)  # Rouge
+            time.sleep(1)
+
+    def start(self):
+        self.__arret.clear()
+        self.__thread = threading.Thread(target=self.changer_couleur)
+        self.__thread.start()
+
+    def stop(self):
+        self.__arret.set()
+        if self.__thread is not None:
+            self.__thread.join()
 
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
@@ -141,6 +165,7 @@ class ServiceEchange:
         self.__option : Option = Option()
         self.__course_autonome : autonome = autonome()
         self.__capteur : capteur = capteur()
+        self.__led_rgb = LedRGB()
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
@@ -151,6 +176,7 @@ class ServiceEchange:
 
     def echange(self) -> None:
         fin: bool = False
+        self.__led_rgb.start()  # Démarrer le thread pour la LED RGB
         while not fin:
             tab_octets = self.__socket_echange.recv(1024) # bloquant
             commande = tab_octets.decode(encoding="utf-8")
@@ -208,6 +234,8 @@ class ServiceEchange:
             self.__socket_echange.send(tab_octets)
             msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"'''
 
+        self.__led_rgb.stop()  # Arrêter le thread pour la LED RGB
+
     def arret(self) -> None:
         self.__socket_echange.close()
 
@@ -226,14 +254,6 @@ if __name__ == "__main__":
     else:
         port_ecoute = 5000
     try:
-        '''# Initialiser la LED RGB avec les couleurs du drapeau français
-        led = Option(0, 0, 0)  # Initialiser avec des valeurs par défaut
-        led.set_ledRGB(0, 0, 255)  # Bleu
-        time.sleep(1)
-        led.set_ledRGB(255, 255, 255)  # Blanc
-        time.sleep(1)
-        led.set_ledRGB(255, 0, 0)  # Rouge
-        time.sleep(1)'''
         service_ecoute = ServiceEcoute(port_ecoute)
         socket_client = service_ecoute.attente()
         service_echange = ServiceEchange(socket_client)
