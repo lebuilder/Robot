@@ -53,7 +53,8 @@ class IHM_client_tcp(Tk):
         self.capteur_active = False
         self.batterie_active = False
 
-        self.logs = {"ip": "", "messages": []}
+        self.logs = {"IP Serveur": ""," Port Serveur": "", "IP Client": "", " messages": []}
+
 
         # instanciation
         self.__fen_connexion = ttk.Frame(self, padding=10)
