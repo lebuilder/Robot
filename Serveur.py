@@ -56,43 +56,48 @@ class capteur:
         self.__p4: int = mrpiZ.proxSensor(4)
 
     def get_p2(self) -> int:
-        return self.__p2
+        return mrpiZ.proxSensor(2)
 
     def get_p3(self) -> int:
-        return self.__p3
+        return mrpiZ.proxSensor(3)
 
     def get_p4(self) -> int:
-        return self.__p4
+        return mrpiZ.proxSensor(4)
 
     def get_all(self) -> list[float]:
         return [mrpiZ.proxSensor(2), mrpiZ.proxSensor(3), mrpiZ.proxSensor(4)]
 
 class autonome:
     def __init__(self):
-        self.__arret = threading.Event()
+        self.__arret : bool = False
         self.__thread = None
+        self.__deplacement = deplacement()
+        self.__capteur = capteur()
+        self.__list_capteurs = list()
 
     def course(self):
-        while not self.__arret:
-            p2: int = mrpiZ.proxSensor(2)
-            p3: int = mrpiZ.proxSensor(3)
-            p4: int = mrpiZ.proxSensor(4)
+        while self.__arret:
+            self.__list_capteurs = self.__capteur.get_all()
+            p2: int = self.__list_capteurs[0]
+            p3: int = self.__list_capteurs[1]
+            p4: int = self.__list_capteurs[2]
             
             if p4 < 40 and p3 < 40 and p2 < 40:
-                self.reculer()
+                self.__deplacement.reculer()
                 time.sleep(1)
-                deplacement.tourner_droite()
+                self.__deplacement.tourner_droite()
             elif p3 < 50:  # Obstacle droit devant
-                deplacement.tourner_gauche()
+                self.__deplacement.tourner_gauche()
             elif p2 < 50:  # Obstacle à gauche
-                deplacement.tourner_droite()
+                self.__deplacement.tourner_droite()
             elif p4 < 50:  # Obstacle à droite
-                deplacement.tourner_gauche()
+                self.__deplacement.tourner_gauche()
             else:
-                deplacement.avancer()
+                self.__deplacement.avancer()
+            time.sleep(0.25)
+            
 
     def start_course(self):
-        self.__arret = False
         self.__thread = threading.Thread(target=self.course)
         self.__thread.start()
 
@@ -100,21 +105,21 @@ class autonome:
         self.__arret = True
         if self.__thread is not None:
             self.__thread.join()
-        deplacement.arret()
-
+            self.__thread = None
+        self.__deplacement.arret()
+        
+    def get_autonome(self)-> bool:
+        return self.__thread
+    
+    def get_all_autonome(self) -> list[int]:
+        return self.__list_capteurs
+    
 class Option:
     def __init__(self) -> None:
         self.__batterie: float = mrpiZ.battery()
-        #self.__ledRGB = mrpiZ.ledRGB(rouge, vert, bleu)
         
     def get_batterie(self) -> float:
         return self.__batterie
-    
-''' def get_ledRGB(self) -> list[int]:
-        return self.__ledRGB
-    
-    def set_ledRGB(self, rouge: int, vert: int, bleu: int) -> None:
-        mrpiZ.ledRGB(rouge, vert, bleu)'''
 
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
@@ -147,7 +152,7 @@ class ServiceEchange:
     def echange(self) -> None:
         fin: bool = False
         while not fin:
-            tab_octets = self.__socket_echange.recv(1024)
+            tab_octets = self.__socket_echange.recv(1024) # bloquant
             commande = tab_octets.decode(encoding="utf-8")
 
             if commande == "avancer":
@@ -186,7 +191,10 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "capteur":
-                tab_octets = self.__capteur.get_all()
+                if self.__course_autonome.get_autonome() == None:
+                    tab_octets = self.__capteur.get_all()
+                else:
+                    tab_octets = self.__course_autonome.get_all_autonome()
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "bat":
