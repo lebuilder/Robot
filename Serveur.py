@@ -44,6 +44,26 @@ class deplacement:
         self.sens_droit = ARRIERE
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
+        
+    def motor_left_avant(self, vitesse: int):
+        self.sens_gauche = AVANT
+        self.vitesse_gauche = vitesse
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        
+    def motor_left_arriere(self, vitesse: int):
+        self.sens_gauche = ARRIERE
+        self.vitesse_gauche = vitesse
+        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)    
+        
+    def motor_right_avant(self, vitesse: int):
+        self.sens_droit = AVANT
+        self.vitesse_droite = vitesse
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
+        
+    def motor_right_arriere(self, vitesse: int):
+        self.sens_droit = ARRIERE
+        self.vitesse_droite = vitesse
+        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
 
     def arret(self):
         mrpiZ.motorLeft(0, 0)
@@ -69,20 +89,20 @@ class capteur:
 
 class autonome:
     def __init__(self):
-        self.__arret = threading.Event()
+        self.__arret : bool = False
         self.__thread = None
         self.__deplacement = deplacement()
         self.__capteur = capteur()
         self.__list_capteurs = list()
 
     def course(self):
-        while not self.__arret.is_set():
+        while self.__arret:
             self.__list_capteurs = self.__capteur.get_all()
             p2: int = self.__list_capteurs[0]
             p3: int = self.__list_capteurs[1]
             p4: int = self.__list_capteurs[2]
             
-            if p4 < 40 and p3 < 40 and p2 < 40:
+            if p4 < 40 and p3 < 50 and p2 < 40:
                 self.__deplacement.reculer()
                 time.sleep(1)
                 self.__deplacement.tourner_droite()
@@ -95,6 +115,8 @@ class autonome:
             else:
                 self.__deplacement.avancer()
             time.sleep(0.25)
+            print(self.get_autonome())
+            print(self.get_all_autonome())
             
 
     def start_course(self):
@@ -102,9 +124,8 @@ class autonome:
         self.__thread.start()
 
     def arret_autonome(self):
-        self.__arret.set()
-        if self.__thread is not None:
-            self.__thread.join()
+        self.__arret = True
+        if self.__thread is None:
             self.__thread = None
         self.__deplacement.arret()
         
@@ -124,26 +145,24 @@ class Option:
 class LedRGB:
     def __init__(self):
         self.__thread = None
-        self.__arret = threading.Event()
+        self.__arret : bool = False
 
     def changer_couleur(self):
-        while not self.__arret.is_set():
-            mrpiZ.ledRGB(0, 0, 255)  # Bleu
-            time.sleep(1)
-            mrpiZ.ledRGB(255, 255, 255)  # Blanc
-            time.sleep(1)
-            mrpiZ.ledRGB(255, 0, 0)  # Rouge
-            time.sleep(1)
+        while  not self.__arret:
+            
+            mrpiZ.ledRGB(0, 0, 255)
+            time.sleep(0.1)
+            mrpiZ.ledRGB(0,255,255)
+            time.sleep(0.1)
 
     def start(self):
-        self.__arret.clear()
         self.__thread = threading.Thread(target=self.changer_couleur)
         self.__thread.start()
 
     def stop(self):
-        self.__arret.set()
-        if self.__thread is not None:
-            self.__thread.join()
+        self.__arret = True
+        if self.__thread is None:
+            self.__thread = None
 
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
@@ -221,6 +240,8 @@ class ServiceEchange:
                     tab_octets = self.__capteur.get_all()
                 else:
                     tab_octets = self.__course_autonome.get_all_autonome()
+                print(self.__course_autonome.get_autonome())
+                print(self.__course_autonome.get_all_autonome())
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "bat":
