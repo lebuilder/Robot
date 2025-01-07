@@ -1,11 +1,9 @@
-# FICHIER Client PROJET POO 
-# Fichier client pour communiquer avec le robot 13 via un serveur TCP.
-# Fait par Gurvan MURY et Bastien BENIS le 06/01/2025
 from tkinter import *
 from tkinter import ttk
 from Client_tcp_class import Client_TCP
 from socket import *
 import json
+from datetime import datetime
 
 
 class IHM_client_tcp(Tk):
@@ -53,8 +51,7 @@ class IHM_client_tcp(Tk):
         self.capteur_active = False
         self.batterie_active = False
 
-        self.logs = {"IP Serveur": ""," Port Serveur": "", "IP Client": "", " messages": []}
-
+        self.logs = {"server_ip": "", "server_port": "", "client_ip": "", "client_port": "", "messages": []}
 
         # instanciation
         self.__fen_connexion = ttk.Frame(self, padding=10)
@@ -183,13 +180,17 @@ class IHM_client_tcp(Tk):
             # connexion au serveur
             self.__client_tcp.connexion()
 
-            self.logs["IP Serveur"] = ip_serveur
-            self.logs["Port Serveur"] = port_serveur
-            self.logs["IP Client"] = self.__client_tcp.get_ip()
+            self.logs["server_ip"] = ip_serveur
+            self.logs["server_port"] = port_serveur
+            self.logs["client_ip"] = self.__client_tcp.get_ip()[0]
+            self.logs["client_port"] = self.__client_tcp.get_ip()[1]
+            self.save_log(f"Connexion au robot 13 : ok")
 
             print("Connexion au robot 13 : ok")
         except Exception as ex:
-            print("Erreur de connexion au robot 13  : ", ex)
+            error_message = f"Erreur de connexion au robot 13 : {ex}"
+            print(error_message)
+            self.save_log(error_message)
         else:
             # désactiver le bouton de connexion
             self.__btn_connexion.configure(state='disabled')
@@ -234,12 +235,19 @@ class IHM_client_tcp(Tk):
         chaine = self.__client_tcp.recevoir()
         if commande == "avancer":
             self.__label_status.config(text="Le robot avance")
+            self.save_log("Le robot avance")
         elif commande == "reculer":
             self.__label_status.config(text="Le robot recule")
+            self.save_log("Le robot recule")
         elif commande == "gauche":
             self.__label_status.config(text="Le robot tourne à gauche")
+            self.save_log("Le robot tourne à gauche")
         elif commande == "droite":
             self.__label_status.config(text="Le robot tourne à droite")
+            self.save_log("Le robot tourne à droite")
+        elif commande == "stop":
+            self.__label_status.config(text="Le robot s'arrête")
+            self.save_log("Le robot s'arrête")
         self.__text_msg_serveur.insert(INSERT, chaine + "\n")
         self.save_log(chaine)
 
@@ -269,7 +277,7 @@ class IHM_client_tcp(Tk):
             self.__client_tcp.envoyer("capteur")
             cap = self.__client_tcp.recevoir()
             self.__label_status_Capteur.config(text=f"valeur capteur : {cap}")
-            self.save_log(cap)
+            self.save_log(f"Capteur: {cap}")
             self.after(1000, self.update_capteurs)
 
     def demander_Baterrie(self) -> None:
@@ -298,7 +306,7 @@ class IHM_client_tcp(Tk):
             self.__client_tcp.envoyer("bat")
             bat = self.__client_tcp.recevoir()
             self.__label_status_Baterrie.config(text=f"valeur baterrie : {bat}")
-            self.save_log(bat)
+            self.save_log(f"Batterie: {bat}")
             self.after(1000, self.update_batterie)
 
     def quitter(self) -> None:
@@ -355,7 +363,7 @@ class IHM_client_tcp(Tk):
 
     def save_log(self, message: str) -> None:
         """
-        Sauvegarder un message dans le fichier de log au format JSON.
+        Sauvegarder un message dans le fichier de log au format JSON avec un timestamp.
 
         Paramètres:
         message (str): Le message à sauvegarder.
@@ -363,9 +371,11 @@ class IHM_client_tcp(Tk):
         Retourne:
         None
         """
-        self.logs["messages"].append(message)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_entry = f"{timestamp} - {message}"
+        self.logs["messages"].append(log_entry)
         with open("logs.json", "w") as log_file:
-            json.dump(self.logs, log_file)
+            json.dump(self.logs, log_file, indent=4)
 
     def view_logs(self) -> None:
         """
@@ -402,7 +412,10 @@ class Fen_Logs(Toplevel):
         try:
             with open("logs.json", "r") as log_file:
                 logs = json.load(log_file)
-                self.__text_logs.insert(END, f"IP: {logs['ip']}\n")
+                self.__text_logs.insert(END, f"Server IP: {logs['server_ip']}\n")
+                self.__text_logs.insert(END, f"Server Port: {logs['server_port']}\n")
+                self.__text_logs.insert(END, f"Client IP: {logs['client_ip']}\n")
+                self.__text_logs.insert(END, f"Client Port: {logs['client_port']}\n")
                 for message in logs["messages"]:
                     self.__text_logs.insert(END, f"{message}\n")
         except FileNotFoundError:
