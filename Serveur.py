@@ -10,7 +10,7 @@ A_DROITE: int = -1
 AVANT: int = 0
 ARRIERE: int = 1
 
-VITESSE_MAX_gauche: float = 99.25
+VITESSE_MAX_gauche: float = 94
 VITESSE_MAX_droite: int = 100
 VITESSE_MIN: int = 25
 
@@ -71,21 +71,18 @@ class deplacement:
 
 class capteur:
     def __init__(self):
-        self.__p2: int = mrpiZ.proxSensor(2)
-        self.__p3: int = mrpiZ.proxSensor(3)
-        self.__p4: int = mrpiZ.proxSensor(4)
+        pass
 
-    def get_p2(self) -> int:
-        return mrpiZ.proxSensor(2)
-
-    def get_p3(self) -> int:
-        return mrpiZ.proxSensor(3)
-
-    def get_p4(self) -> int:
-        return mrpiZ.proxSensor(4)
-
-    def get_all(self) -> list[float]:
-        return [mrpiZ.proxSensor(2), mrpiZ.proxSensor(3), mrpiZ.proxSensor(4)]
+    def get_all(self) -> list[int]:
+        try:
+            p2 = int(mrpiZ.proxSensor(2))
+            p3 = int(mrpiZ.proxSensor(3))
+            p4 = int(mrpiZ.proxSensor(4))
+            print(p2, p3, p4)
+            return [p2, p3, p4]
+        except ValueError as e:
+            print(f"Erreur de conversion des données du capteur: {e}")
+            return [-1, -1, -1]  # Valeurs par défaut en cas d'erreur
 
 class autonome:
     def __init__(self):
@@ -103,20 +100,22 @@ class autonome:
             p4: int = self.__list_capteurs[2]
             
             if p4 < 40 and p3 < 50 and p2 < 40:
-                self.__deplacement.reculer()
-                time.sleep(1)
-                self.__deplacement.tourner_droite()
+                self.__deplacement.motor_left_arriere(20)
+                self.__deplacement.motor_right_avant(100)
             elif p3 < 50:  # Obstacle droit devant
-                self.__deplacement.tourner_gauche()
+                self.__deplacement.motor_left_arriere(20)
+                self.__deplacement.motor_right_avant(100)
             elif p2 < 50:  # Obstacle à gauche
-                self.__deplacement.tourner_droite()
+                self.__deplacement.motor_left_avant(100)
+                self.__deplacement.motor_right_avant(20)
             elif p4 < 50:  # Obstacle à droite
-                self.__deplacement.tourner_gauche()
+                self.__deplacement.motor_right_avant(100)
+                self.__deplacement.motor_left_avant(20)
             else:
                 self.__deplacement.avancer()
-            time.sleep(0.25)
-            print(self.get_autonome())
-            print(self.get_all_autonome())
+            time.sleep(0.5)
+            #print(self.get_autonome())
+            #print(self.get_all_autonome())
             
 
     def start_course(self):
@@ -125,7 +124,7 @@ class autonome:
 
     def arret_autonome(self):
         self.__arret = True
-        if self.__thread is None:
+        if self.__thread is not None:
             self.__thread = None
         self.__deplacement.arret()
         
@@ -161,8 +160,31 @@ class LedRGB:
 
     def stop(self):
         self.__arret = True
-        if self.__thread is None:
+        if self.__thread is not None:
             self.__thread = None
+        
+
+class Buzzer:
+    def __init__(self):
+        self.__thread = None
+        self.__arret : bool = False
+        
+    def sonnerie(self):
+        while not self.__arret:
+            mrpiZ.buzzer(1000)
+            time.sleep(0.1)
+            mrpiZ.buzzer(10000)
+            time.sleep(0.1)
+            
+    def start(self):
+        self.__thread = threading.Thread(target=self.sonnerie)
+        self.__thread.start()
+        
+    def stop(self):
+        self.__arret = True
+        if self.__thread is not None:
+            self.__thread = None
+        mrpiZ.buzzerStop()
 
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
@@ -185,6 +207,7 @@ class ServiceEchange:
         self.__course_autonome : autonome = autonome()
         self.__capteur : capteur = capteur()
         self.__led_rgb = LedRGB()
+        self.__buzzer = Buzzer()
 
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
@@ -195,11 +218,10 @@ class ServiceEchange:
 
     def echange(self) -> None:
         fin: bool = False
-        self.__led_rgb.start()  # Démarrer le thread pour la LED RGB
         while not fin:
             tab_octets = self.__socket_echange.recv(1024) # bloquant
             commande = tab_octets.decode(encoding="utf-8")
-
+            print(commande)
             if commande == "avancer":
                 self.__robot.avancer()
                 tab_octets = commande.encode("utf-8")
@@ -236,17 +258,28 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "capteur":
-                if self.__course_autonome.get_autonome() == None:
+                if (self.__course_autonome.get_autonome() == None):
                     tab_octets = self.__capteur.get_all()
-                else:
+                elif (self.__course_autonome.get_autonome() != None):
                     tab_octets = self.__course_autonome.get_all_autonome()
-                print(self.__course_autonome.get_autonome())
-                print(self.__course_autonome.get_all_autonome())
+                #print(self.__course_autonome.get_autonome())
+                #print(f"{self.__course_autonome.get_all_autonome()} pour le mode autonome")
+                #print(f"{self.__capteur.get_all()} pour le mode manuel")
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
             elif commande == "bat":
                 tab_octets = self.__option.get_batterie()
                 tab_octets = str(tab_octets).encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+            elif commande == "police_on":
+                self.__led_rgb.start()
+                self.__buzzer.start()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+            elif commande == "police_off":
+                self.__led_rgb.stop()
+                self.__buzzer.stop()
+                tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
 
             # envoie données capteurs au client
@@ -254,8 +287,6 @@ class ServiceEchange:
             tab_octets = msg_serveur.encode(encoding="utf-8")
             self.__socket_echange.send(tab_octets)
             msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"'''
-
-        self.__led_rgb.stop()  # Arrêter le thread pour la LED RGB
 
     def arret(self) -> None:
         self.__socket_echange.close()
