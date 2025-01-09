@@ -47,23 +47,23 @@ class deplacement:
         
     def motor_left_avant(self, vitesse: int):
         self.sens_gauche = AVANT
-        self.vitesse_gauche = vitesse
-        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
+        vitesse_gauche = vitesse
+        mrpiZ.motorLeft(self.sens_gauche, vitesse_gauche)
         
     def motor_left_arriere(self, vitesse: int):
         self.sens_gauche = ARRIERE
-        self.vitesse_gauche = vitesse
-        mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)    
+        vitesse_gauche = vitesse
+        mrpiZ.motorLeft(self.sens_gauche, vitesse_gauche)    
         
     def motor_right_avant(self, vitesse: int):
         self.sens_droit = AVANT
-        self.vitesse_droite = vitesse
-        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
+        vitesse_droite = vitesse
+        mrpiZ.motorRight(self.sens_droit, vitesse_droite)
         
     def motor_right_arriere(self, vitesse: int):
         self.sens_droit = ARRIERE
-        self.vitesse_droite = vitesse
-        mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
+        vitesse_droite = vitesse
+        mrpiZ.motorRight(self.sens_droit, vitesse_droite)
 
     def arret(self):
         mrpiZ.motorLeft(0, 0)
@@ -78,7 +78,7 @@ class capteur:
             p2 = int(mrpiZ.proxSensor(2))
             p3 = int(mrpiZ.proxSensor(3))
             p4 = int(mrpiZ.proxSensor(4))
-            print(p2, p3, p4)
+            #print(p2, p3, p4)
             return [p2, p3, p4]
         except ValueError as e:
             print(f"Erreur de conversion des données du capteur: {e}")
@@ -86,7 +86,7 @@ class capteur:
 
 class autonome:
     def __init__(self):
-        self.__arret : bool = False
+        self.__arret : bool = True
         self.__thread = None
         self.__deplacement = deplacement()
         self.__capteur = capteur()
@@ -99,33 +99,34 @@ class autonome:
             p3: int = self.__list_capteurs[1]
             p4: int = self.__list_capteurs[2]
             
-            if p4 < 40 and p3 < 50 and p2 < 40:
+            if p4 < 100 and p3 < 110 and p2 < 100:
                 self.__deplacement.motor_left_arriere(20)
                 self.__deplacement.motor_right_avant(100)
-            elif p3 < 50:  # Obstacle droit devant
+            elif p3 < 110:  # Obstacle droit devant
                 self.__deplacement.motor_left_arriere(20)
                 self.__deplacement.motor_right_avant(100)
-            elif p2 < 50:  # Obstacle à gauche
+            elif p2 < 110:  # Obstacle à gauche
                 self.__deplacement.motor_left_avant(100)
                 self.__deplacement.motor_right_avant(20)
-            elif p4 < 50:  # Obstacle à droite
+            elif p4 < 110:  # Obstacle à droite
                 self.__deplacement.motor_right_avant(100)
                 self.__deplacement.motor_left_avant(20)
             else:
                 self.__deplacement.avancer()
-            time.sleep(0.5)
+            time.sleep(0.25)
             #print(self.get_autonome())
             #print(self.get_all_autonome())
+            #print(self.__arret)
             
 
     def start_course(self):
+        self.__arret = True
         self.__thread = threading.Thread(target=self.course)
         self.__thread.start()
 
     def arret_autonome(self):
-        self.__arret = True
-        if self.__thread is not None:
-            self.__thread = None
+        self.__arret = False
+        self.__thread = None
         self.__deplacement.arret()
         
     def get_autonome(self)-> bool:
@@ -171,7 +172,7 @@ class Buzzer:
         
     def sonnerie(self):
         while not self.__arret:
-            mrpiZ.buzzer(1000)
+            mrpiZ.buzzer(5000)
             time.sleep(0.1)
             mrpiZ.buzzer(10000)
             time.sleep(0.1)
@@ -221,42 +222,52 @@ class ServiceEchange:
         while not fin:
             tab_octets = self.__socket_echange.recv(1024) # bloquant
             commande = tab_octets.decode(encoding="utf-8")
-            print(commande)
+            #print(commande)
             if commande == "avancer":
                 self.__robot.avancer()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "reculer":
                 self.__robot.reculer()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "gauche":
                 self.__robot.tourner_gauche()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "droite":
                 self.__robot.tourner_droite()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "mode automatique":
                 self.__course_autonome.start_course()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "fin":
                 self.__robot.arret()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 fin = True
                 self.__course_autonome.arret_autonome()
+                
             elif commande == "mode manuel":
                 self.__course_autonome.arret_autonome()
-                tab_octets = commande.encode("utf-8")
-                self.__socket_echange.send(tab_octets)
-            elif commande == "stop":
+                time.sleep(0.10)
                 self.__robot.arret()
-                self.__course_autonome.arret_autonome()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
+            elif commande == "stop":
+                self.__course_autonome.arret_autonome()
+                self.__robot.arret()
+                tab_octets = commande.encode("utf-8")
+                self.__socket_echange.send(tab_octets)
+                
             elif commande == "capteur":
                 if (self.__course_autonome.get_autonome() == None):
                     tab_octets = self.__capteur.get_all()
@@ -267,15 +278,18 @@ class ServiceEchange:
                 #print(f"{self.__capteur.get_all()} pour le mode manuel")
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "bat":
                 tab_octets = self.__option.get_batterie()
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "police_on":
                 self.__led_rgb.start()
                 self.__buzzer.start()
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
+                
             elif commande == "police_off":
                 self.__led_rgb.stop()
                 self.__buzzer.stop()
