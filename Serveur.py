@@ -194,10 +194,36 @@ class Buzzer:
     # Méthode pour faire sonner le buzzer
     def sonnerie(self):
         while not self.__arret:
-            mrpiZ.buzzer(5000)
-            time.sleep(0.1)
-            mrpiZ.buzzer(10000)
-            time.sleep(0.1)
+                # La Marseillaise (début simplifié)
+            # "Allons enfants de la Patrie"
+            mrpiZ.buzzer(392, 1)  # Sol4 - "A"
+            time.sleep(0.5)
+            mrpiZ.buzzer(392, 1)  # Sol4 - "lons"
+            time.sleep(0.5)
+            mrpiZ.buzzer(440, 2)  # La4 - "enfants"
+            time.sleep(0.5)
+
+            mrpiZ.buzzer(392, 1)  # Sol4 - "de"
+            time.sleep(0.5)
+            mrpiZ.buzzer(349, 1)  # Fa4 - "la"
+            time.sleep(0.5)
+            mrpiZ.buzzer(329, 2)  # Mi4 - "Pa-trie"
+            time.sleep(0.5)
+
+            # "Le jour de gloire est arrivé"
+            mrpiZ.buzzer(329, 1)  # Mi4 - "Le"
+            time.sleep(0.5)
+            mrpiZ.buzzer(349, 1)  # Fa4 - "jour"
+            time.sleep(0.5)
+            mrpiZ.buzzer(392, 2)  # Sol4 - "de gloire"
+            time.sleep(0.5)
+
+            mrpiZ.buzzer(392, 1)  # Sol4 - "est"
+            time.sleep(0.5)
+            mrpiZ.buzzer(440, 1)  # La4 - "ar"
+            time.sleep(0.5)
+            mrpiZ.buzzer(392, 2)  # Sol4 - "ri-vé"
+            time.sleep(0.5)
             
     # Méthode pour démarrer la sonnerie
     def start(self):
