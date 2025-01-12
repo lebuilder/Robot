@@ -196,34 +196,34 @@ class Buzzer:
         while not self.__arret:
                 # La Marseillaise (début simplifié)
             # "Allons enfants de la Patrie"
-            mrpiZ.buzzer(392, 1)  # Sol4 - "A"
+            mrpiZ.buzzer(392)  # Sol4 - "A"
             time.sleep(0.5)
-            mrpiZ.buzzer(392, 1)  # Sol4 - "lons"
+            mrpiZ.buzzer(392)  # Sol4 - "lons"
             time.sleep(0.5)
-            mrpiZ.buzzer(440, 2)  # La4 - "enfants"
-            time.sleep(0.5)
+            mrpiZ.buzzer(440)  # La4 - "enfants"
+            time.sleep(1)
 
-            mrpiZ.buzzer(392, 1)  # Sol4 - "de"
+            mrpiZ.buzzer(392)  # Sol4 - "de"
             time.sleep(0.5)
-            mrpiZ.buzzer(349, 1)  # Fa4 - "la"
+            mrpiZ.buzzer(349)  # Fa4 - "la"
             time.sleep(0.5)
-            mrpiZ.buzzer(329, 2)  # Mi4 - "Pa-trie"
-            time.sleep(0.5)
+            mrpiZ.buzzer(329)  # Mi4 - "Pa-trie"
+            time.sleep(1)
 
             # "Le jour de gloire est arrivé"
-            mrpiZ.buzzer(329, 1)  # Mi4 - "Le"
+            mrpiZ.buzzer(329)  # Mi4 - "Le"
             time.sleep(0.5)
-            mrpiZ.buzzer(349, 1)  # Fa4 - "jour"
+            mrpiZ.buzzer(349)  # Fa4 - "jour"
             time.sleep(0.5)
-            mrpiZ.buzzer(392, 2)  # Sol4 - "de gloire"
-            time.sleep(0.5)
+            mrpiZ.buzzer(392)  # Sol4 - "de gloire"
+            time.sleep(1)
 
-            mrpiZ.buzzer(392, 1)  # Sol4 - "est"
+            mrpiZ.buzzer(392)  # Sol4 - "est"
             time.sleep(0.5)
-            mrpiZ.buzzer(440, 1)  # La4 - "ar"
+            mrpiZ.buzzer(440)  # La4 - "ar"
             time.sleep(0.5)
-            mrpiZ.buzzer(392, 2)  # Sol4 - "ri-vé"
-            time.sleep(0.5)
+            mrpiZ.buzzer(392)  # Sol4 - "ri-vé"
+            time.sleep(1)
             
     # Méthode pour démarrer la sonnerie
     def start(self):
