@@ -4,16 +4,19 @@ import mrpiZ
 import time
 import threading
 
+# Constantes pour les directions
 A_GAUCHE: int = 1
 A_DROITE: int = -1
 
 AVANT: int = 0
 ARRIERE: int = 1
 
+# Constantes pour les vitesses
 VITESSE_MAX_gauche: float = 94
 VITESSE_MAX_droite: int = 100
 VITESSE_MIN: int = 25
 
+# Classe pour gérer les déplacements du robot
 class deplacement:
     def __init__(self):
         self.vitesse_gauche: int = VITESSE_MAX_gauche
@@ -21,58 +24,69 @@ class deplacement:
         self.sens_gauche: int = AVANT
         self.sens_droit: int = AVANT
 
+    # Méthode pour avancer
     def avancer(self):
         self.sens_gauche = AVANT
         self.sens_droit = AVANT
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
 
+    # Méthode pour reculer
     def reculer(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = ARRIERE
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
 
+    # Méthode pour tourner à gauche
     def tourner_gauche(self):
         self.sens_gauche = ARRIERE
         self.sens_droit = AVANT
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
 
+    # Méthode pour tourner à droite
     def tourner_droite(self):
         self.sens_gauche = AVANT
         self.sens_droit = ARRIERE
         mrpiZ.motorLeft(self.sens_gauche, self.vitesse_gauche)
         mrpiZ.motorRight(self.sens_droit, self.vitesse_droite)
         
+    # Méthode pour contrôler le moteur gauche en avant
     def motor_left_avant(self, vitesse: int):
         self.sens_gauche = AVANT
         vitesse_gauche = vitesse
         mrpiZ.motorLeft(self.sens_gauche, vitesse_gauche)
         
+    # Méthode pour contrôler le moteur gauche en arrière
     def motor_left_arriere(self, vitesse: int):
         self.sens_gauche = ARRIERE
         vitesse_gauche = vitesse
         mrpiZ.motorLeft(self.sens_gauche, vitesse_gauche)    
         
+    # Méthode pour contrôler le moteur droit en avant
     def motor_right_avant(self, vitesse: int):
         self.sens_droit = AVANT
         vitesse_droite = vitesse
         mrpiZ.motorRight(self.sens_droit, vitesse_droite)
         
+    # Méthode pour contrôler le moteur droit en arrière
     def motor_right_arriere(self, vitesse: int):
         self.sens_droit = ARRIERE
         vitesse_droite = vitesse
         mrpiZ.motorRight(self.sens_droit, vitesse_droite)
 
+    # Méthode pour arrêter le robot
     def arret(self):
         mrpiZ.motorLeft(0, 0)
         mrpiZ.motorRight(0, 0)
 
+# Classe pour gérer les capteurs du robot
 class capteur:
     def __init__(self):
         pass
 
+    # Méthode pour obtenir les valeurs de tous les capteurs
     def get_all(self) -> list[int]:
         try:
             p2 = int(mrpiZ.proxSensor(2))
@@ -84,14 +98,16 @@ class capteur:
             print(f"Erreur de conversion des données du capteur: {e}")
             return [-1, -1, -1]  # Valeurs par défaut en cas d'erreur
 
+# Classe pour gérer le mode autonome du robot
 class autonome:
     def __init__(self):
-        self.__arret : bool = True
+        self.__arret: bool = True
         self.__thread = None
         self.__deplacement = deplacement()
         self.__capteur = capteur()
         self.__list_capteurs = list()
 
+    # Méthode pour la course autonome
     def course(self):
         while self.__arret:
             self.__list_capteurs = self.__capteur.get_all()
@@ -114,62 +130,68 @@ class autonome:
             else:
                 self.__deplacement.avancer()
             time.sleep(0.25)
-            #print(self.get_autonome())
-            #print(self.get_all_autonome())
-            #print(self.__arret)
-            
 
+    # Méthode pour démarrer la course autonome
     def start_course(self):
         self.__arret = True
         self.__thread = threading.Thread(target=self.course)
         self.__thread.start()
 
+    # Méthode pour arrêter la course autonome
     def arret_autonome(self):
         self.__arret = False
         self.__thread = None
         self.__deplacement.arret()
         
-    def get_autonome(self)-> bool:
+    # Méthode pour vérifier si le mode autonome est actif
+    def get_autonome(self) -> bool:
         return self.__thread
     
+    # Méthode pour obtenir les valeurs des capteurs en mode autonome
     def get_all_autonome(self) -> list[int]:
         return self.__list_capteurs
 
+# Classe pour gérer les options du robot
 class Option:
     def __init__(self) -> None:
         self.__batterie: float = mrpiZ.battery()
         
+    # Méthode pour obtenir le niveau de la batterie
     def get_batterie(self) -> float:
         return self.__batterie
 
+# Classe pour gérer la LED RGB du robot
 class LedRGB:
     def __init__(self):
         self.__thread = None
-        self.__arret : bool = False
+        self.__arret: bool = False
 
+    # Méthode pour changer la couleur de la LED
     def changer_couleur(self):
-        while  not self.__arret:
-            
+        while not self.__arret:
             mrpiZ.ledRGB(0, 0, 255)
             time.sleep(0.1)
-            mrpiZ.ledRGB(0,255,255)
+            mrpiZ.ledRGB(0, 255, 255)
             time.sleep(0.1)
 
+    # Méthode pour démarrer le changement de couleur
     def start(self):
         self.__thread = threading.Thread(target=self.changer_couleur)
         self.__thread.start()
 
+    # Méthode pour arrêter le changement de couleur
     def stop(self):
         self.__arret = True
         if self.__thread is not None:
             self.__thread = None
-        
 
+# Classe pour gérer le buzzer du robot
 class Buzzer:
     def __init__(self):
         self.__thread = None
-        self.__arret : bool = False
+        self.__arret: bool = False
         
+    # Méthode pour faire sonner le buzzer
     def sonnerie(self):
         while not self.__arret:
             mrpiZ.buzzer(5000)
@@ -177,16 +199,19 @@ class Buzzer:
             mrpiZ.buzzer(10000)
             time.sleep(0.1)
             
+    # Méthode pour démarrer la sonnerie
     def start(self):
         self.__thread = threading.Thread(target=self.sonnerie)
         self.__thread.start()
         
+    # Méthode pour arrêter la sonnerie
     def stop(self):
         self.__arret = True
         if self.__thread is not None:
             self.__thread = None
         mrpiZ.buzzerStop()
 
+# Classe pour gérer l'écoute des connexions entrantes
 class ServiceEcoute:
     def __init__(self, port_serveur: int) -> None:
         self.__socket_ecoute: socket = socket(AF_INET, SOCK_STREAM)
@@ -194,35 +219,39 @@ class ServiceEcoute:
         self.__socket_ecoute.listen(1)
         print(f"écoute sur le port :  {port_serveur}")
 
+    # Méthode pour attendre une connexion
     def attente(self) -> socket:
         print("Attente d'une connexion ... ")
         client_socket, client_address = self.__socket_ecoute.accept()
         print(f"connexion avec le client : {client_address}")
         return client_socket
 
+# Classe pour gérer les échanges avec le client
 class ServiceEchange:
     def __init__(self, socket_echange: socket) -> None:
         self.__socket_echange = socket_echange
-        self.__robot : deplacement = deplacement()
-        self.__option : Option = Option()
-        self.__course_autonome : autonome = autonome()
-        self.__capteur : capteur = capteur()
+        self.__robot: deplacement = deplacement()
+        self.__option: Option = Option()
+        self.__course_autonome: autonome = autonome()
+        self.__capteur: capteur = capteur()
         self.__led_rgb = LedRGB()
         self.__buzzer = Buzzer()
 
+    # Méthode pour envoyer un message au client
     def envoyer(self, msg: str) -> None:
         self.__socket_echange.send(msg.encode('utf-8'))
 
+    # Méthode pour recevoir un message du client
     def recevoir(self) -> str:
         tab_octets = self.__socket_echange.recv(1024)
         return tab_octets.decode(encoding='utf-8')
 
+    # Méthode pour gérer les échanges avec le client
     def echange(self) -> None:
         fin: bool = False
         while not fin:
-            tab_octets = self.__socket_echange.recv(1024) # bloquant
+            tab_octets = self.__socket_echange.recv(1024)  # bloquant
             commande = tab_octets.decode(encoding="utf-8")
-            #print(commande)
             if commande == "avancer":
                 self.__robot.avancer()
                 tab_octets = commande.encode("utf-8")
@@ -269,13 +298,10 @@ class ServiceEchange:
                 self.__socket_echange.send(tab_octets)
                 
             elif commande == "capteur":
-                if (self.__course_autonome.get_autonome() == None):
+                if self.__course_autonome.get_autonome() == None:
                     tab_octets = self.__capteur.get_all()
-                elif (self.__course_autonome.get_autonome() != None):
+                elif self.__course_autonome.get_autonome() != None:
                     tab_octets = self.__course_autonome.get_all_autonome()
-                #print(self.__course_autonome.get_autonome())
-                #print(f"{self.__course_autonome.get_all_autonome()} pour le mode autonome")
-                #print(f"{self.__capteur.get_all()} pour le mode manuel")
                 tab_octets = str(tab_octets).encode("utf-8")
                 self.__socket_echange.send(tab_octets)
                 
@@ -296,25 +322,18 @@ class ServiceEchange:
                 tab_octets = commande.encode("utf-8")
                 self.__socket_echange.send(tab_octets)
 
-            # envoie données capteurs au client
-            '''msg_serveur: str = f"distance capteur 2 : {mrpiZ.proxSensor(2)}\n distance capteur 3 : {mrpiZ.proxSensor(3)}\n distance capteur 4 : {mrpiZ.proxSensor(4)}\n"
-            tab_octets = msg_serveur.encode(encoding="utf-8")
-            self.__socket_echange.send(tab_octets)
-            msg_serveur: str = f"batterie : {mrpiZ.battery()}\n"'''
-
+    # Méthode pour arrêter les échanges
     def arret(self) -> None:
         self.__socket_echange.close()
 
 if __name__ == "__main__":
-    # declaration des variables
+    # Déclaration des variables
     Robot = deplacement()
-    #Capteur = capteur()
-    #Course_autonome = autonome()
     port_ecoute: int = None
     service_ecoute: ServiceEcoute = None
     socket_client: socket = None
     service_echange: ServiceEchange = None
-    # lecture des parametres (le numero de port)
+    # Lecture des paramètres (le numéro de port)
     if len(sys.argv) == 2:
         port_ecoute = int(sys.argv[1])
     else:
