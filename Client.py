@@ -4,6 +4,7 @@ from Client_tcp_class import Client_TCP
 from socket import *
 import json
 from datetime import datetime
+from time import *
 
 
 class IHM_client_tcp(Tk):
@@ -36,6 +37,7 @@ class IHM_client_tcp(Tk):
         self.__btn_LFI: Button
         self.__btn_RN: Button
         self.__btn_stop: Button
+        self.__btn_police: Button
         self.__label_mode: Label
         self.__label_status: Label
         self.__label_status_Capteur: Label
@@ -45,6 +47,7 @@ class IHM_client_tcp(Tk):
         self.__btn_bat: Button
 
         self.mode_auto: bool = False
+        self.mode_police: bool = False
 
         self.__fen_info: Frame
 
@@ -73,6 +76,7 @@ class IHM_client_tcp(Tk):
         self.__btn_RN = ttk.Button(self.__fen_echange, text="Droite", state='disabled', command=lambda: self.envoyer_commande("droite"))
         self.__btn_auto = ttk.Button(self.__fen_echange, state='disabled', text="Mode Auto", command=self.auto_mode)
         self.__btn_stop = ttk.Button(self.__fen_echange, text="Arret", state='disabled', command=lambda: self.envoyer_commande("stop"))
+        self.__btn_police = ttk.Button(self.__fen_echange, text="Mode police", state='disabled', command= self.police)
         self.__btn_capteur = ttk.Button(self.__fen_echange, text="Demander Capteurs", state='disabled', command=self.demander_capteurs)
         self.__btn_bat = ttk.Button(self.__fen_echange, text="Demander baterrie", state='disabled', command=self.demander_Baterrie)
 
@@ -96,6 +100,7 @@ class IHM_client_tcp(Tk):
 
         self.__fen_echange.pack(pady=10)
         self.__btn_envoyer.grid(row=0, column=1, padx=5, pady=5)
+        self.__btn_police.grid(row=0, column=0, padx=5, pady=5)
         self.__btn_avancer.grid(row=2, column=1, padx=5, pady=5)
         self.__btn_LFI.grid(row=3, column=0, padx=5, pady=5)
         self.__btn_RN.grid(row=3, column=2, padx=5, pady=5)
@@ -206,6 +211,7 @@ class IHM_client_tcp(Tk):
             self.__btn_capteur.configure(state='active')
             self.__btn_bat.configure(state='active')
             self.__btn_auto.configure(state='active')
+            self.__btn_police.configure(state='active')
 
     def envoyer(self) -> None:
         """
@@ -350,6 +356,8 @@ class IHM_client_tcp(Tk):
             self.__btn_reculer.configure(state='active')
             self.__btn_LFI.configure(state='active')
             self.__btn_RN.configure(state='active')
+            self.__btn_police.configure(state='active')
+            
         else:
             self.set_mode("Automatique")
             self.__client_tcp.envoyer("mode automatique")
@@ -359,7 +367,26 @@ class IHM_client_tcp(Tk):
             self.__btn_reculer.configure(state='disabled')
             self.__btn_LFI.configure(state='disabled')
             self.__btn_RN.configure(state='disabled')
+            self.__btn_police.configure(state='active')
         self.mode_auto = not self.mode_auto
+        
+    def police(self) -> None:
+        """
+        Basculer entre le mode police et normal.
+
+        Retourne:
+        None
+        """
+        if self.mode_police:
+            self.__client_tcp.envoyer("police_off")
+            self.__btn_police.config(text="Mode Police")
+            self.save_log(f"Mode police desactiver")
+        else:
+            self.__client_tcp.envoyer("police_on")
+            self.__btn_police.config(text="Mode Normal")
+            self.save_log(f"Mode police activer")
+        self.mode_police = not self.mode_police
+        
 
     def save_log(self, message: str) -> None:
         """

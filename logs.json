@@ -1,0 +1,9 @@
+{
+    "server_ip": "10.15.141.1",
+    "server_port": 5000,
+    "client_ip": "10.15.141.58",
+    "client_port": 57891,
+    "messages": [
+        "2025-01-08 09:54:22 - Connexion au robot 13 : ok"
+    ]
+}
