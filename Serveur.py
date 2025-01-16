@@ -193,37 +193,74 @@ class Buzzer:
         
     # Méthode pour faire sonner le buzzer
     def sonnerie(self):
-        while not self.__arret:
-                # La Marseillaise (début simplifié)
-            # "Allons enfants de la Patrie"
-            mrpiZ.buzzer(392)  # Sol4 - "A"
-            time.sleep(0.5)
-            mrpiZ.buzzer(392)  # Sol4 - "lons"
-            time.sleep(0.5)
-            mrpiZ.buzzer(440)  # La4 - "enfants"
-            time.sleep(1)
+        # Durées ajustées à 120 BPM
+        bpm = 120
+        beat_duration = 60 / bpm  # 0.5 seconde par battement
+        croche = beat_duration * 0.5  # 0.25 seconde
+        noire = beat_duration         # 0.5 seconde
+        blanche = beat_duration * 2   # 1 seconde complète
 
-            mrpiZ.buzzer(392)  # Sol4 - "de"
-            time.sleep(0.5)
-            mrpiZ.buzzer(349)  # Fa4 - "la"
-            time.sleep(0.5)
-            mrpiZ.buzzer(329)  # Mi4 - "Pa-trie"
-            time.sleep(1)
+        # Fréquences des notes utilisées (octave 4 et 5)
+        G4 = 392  # Sol
+        A4 = 440  # La
+        B4 = 493  # Si
+        C5 = 523  # Do
+        D5 = 587  # Ré
+        E5 = 659  # Mi
+        F5 = 698  # Fa
 
-            # "Le jour de gloire est arrivé"
-            mrpiZ.buzzer(329)  # Mi4 - "Le"
-            time.sleep(0.5)
-            mrpiZ.buzzer(349)  # Fa4 - "jour"
-            time.sleep(0.5)
-            mrpiZ.buzzer(392)  # Sol4 - "de gloire"
-            time.sleep(1)
+        # Début du Menuet de Mozart (simplifié)
+        mrpiZ.buzzer(G4)  # Sol
+        time.sleep(noire)
 
-            mrpiZ.buzzer(392)  # Sol4 - "est"
-            time.sleep(0.5)
-            mrpiZ.buzzer(440)  # La4 - "ar"
-            time.sleep(0.5)
-            mrpiZ.buzzer(392)  # Sol4 - "ri-vé"
-            time.sleep(1)
+        mrpiZ.buzzer(A4)  # La
+        time.sleep(noire)
+
+        mrpiZ.buzzer(B4)  # Si
+        time.sleep(noire)
+
+        mrpiZ.buzzer(C5)  # Do
+        time.sleep(noire)
+
+        mrpiZ.buzzer(D5)  # Ré
+        time.sleep(noire)
+
+        mrpiZ.buzzer(E5)  # Mi
+        time.sleep(noire)
+
+        mrpiZ.buzzer(F5)  # Fa
+        time.sleep(noire)
+
+        mrpiZ.buzzer(G4)  # Sol
+        time.sleep(blanche)
+
+        # Deuxième phrase musicale
+        mrpiZ.buzzer(G4)  # Sol
+        time.sleep(noire)
+
+        mrpiZ.buzzer(F5)  # Fa
+        time.sleep(noire)
+
+        mrpiZ.buzzer(E5)  # Mi
+        time.sleep(noire)
+
+        mrpiZ.buzzer(D5)  # Ré
+        time.sleep(noire)
+
+        mrpiZ.buzzer(C5)  # Do
+        time.sleep(noire)
+
+        mrpiZ.buzzer(B4)  # Si
+        time.sleep(noire)
+
+        mrpiZ.buzzer(A4)  # La
+        time.sleep(noire)
+
+        mrpiZ.buzzer(G4)  # Sol
+        time.sleep(blanche)
+
+        # Pause avant de rejouer
+        time.sleep(1)
             
     # Méthode pour démarrer la sonnerie
     def start(self):

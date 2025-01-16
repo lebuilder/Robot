@@ -4,15 +4,24 @@
 
 Ce document présente un compte rendu des fonctionnalités développées pour le robot n°13 dans le cadre de la SAÉ 3.02. Nous avons implémenté une application client-serveur en Python permettant de contrôler le robot à distance et de le faire fonctionner en mode autonome.
 
+Le robot possède:
+- 3 capteurs optique
+- 2 roues
+- 2 moteurs
+- 1 carte raspberry pi V0
+- 1 buzzer
+- 1 led RGB
+
+
 ## Fonctionnalités Implémentées
 
 ### Serveur
 
 Le serveur est responsable de la gestion des commandes envoyées par le client et du contrôle des différents composants du robot (moteurs, capteurs, LED RGB, buzzer). Les principales fonctionnalités du serveur incluent :
 
-- **Déplacement du robot** : Le serveur peut recevoir des commandes pour avancer, reculer, tourner à gauche et tourner à droite.
-- **Mode autonome** : Le serveur peut activer un mode autonome où le robot utilise ses capteurs pour naviguer de manière autonome.
-- **Contrôle des capteurs** : Le serveur peut envoyer les valeurs des capteurs au client.
+- **Déplacement du robot** : Le serveur peut recevoir des commandes pour avancer, reculer, tourner à gauche et tourner à droite et s'arrêter.
+- **Mode autonome** : Le serveur peut activer un mode autonome où le robot utilise ses capteurs pour naviguer de manière autonome avec un déplacement fluide.
+- **Contrôle des capteurs** : Le serveur peut envoyer les valeurs des capteurs au client et s'en servire pour le mode autonome.
 - **Contrôle de la batterie** : Le serveur peut envoyer le niveau de la batterie au client.
 - **Mode police** : Le serveur peut activer un mode où la LED RGB change de couleur et le buzzer joue une mélodie.
 
@@ -32,7 +41,7 @@ Le client est une interface graphique développée en Python utilisant Tkinter. 
 
 ### Objectifs Réalisés
 
-- **Suivi de ligne et gestion des angles** : Le mode autonome utilise les capteurs pour détecter les obstacles et ajuster la direction du robot.
+- **Mode autonome avec la gestion des angles** : Le mode autonome utilise les capteurs pour détecter les obstacles et ajuster la direction du robot sans tourner brusquement.
 - **Application client-serveur** : Nous avons développé une application client-serveur en Python utilisant le protocole TCP.
 - **Interface graphique** : Le client dispose d'une interface graphique permettant de configurer les paramètres réseau et de contrôler le robot.
 - **Sauvegarde des données** : Les logs des actions et messages sont sauvegardés dans un fichier JSON.
@@ -54,6 +63,9 @@ Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fo
 | Implémentation du mode autonome| 13/12/2024  | 12/01/2025  | 31            |
 | Tests et débogage              | 12/11/2024  | 16/01/2025  | 66            |
 | Documentation                  | 16/01/2025  | 16/01/2025  | 1             |
+
+## Fonctionnement des programmes
+
 
 ## Conclusion
 
