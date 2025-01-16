@@ -1,9 +1,9 @@
 {
     "server_ip": "10.15.141.1",
     "server_port": 5000,
-    "client_ip": "10.15.141.58",
-    "client_port": 57891,
+    "client_ip": "",
+    "client_port": "",
     "messages": [
-        "2025-01-08 09:54:22 - Connexion au robot 13 : ok"
+        "2025-01-13 16:04:57 - Erreur de connexion au robot 13 : [WinError 10038] Une op\u00e9ration a \u00e9t\u00e9 tent\u00e9e sur autre chose qu\u2019un socket"
     ]
 }
