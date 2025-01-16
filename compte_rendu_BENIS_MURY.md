@@ -66,6 +66,10 @@ Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fo
 
 ## Fonctionnement des programmes
 
+### Client
+
+
+### Serveur
 
 ## Conclusion
 
