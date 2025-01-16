@@ -43,17 +43,17 @@ Le client est une interface graphique développée en Python utilisant Tkinter. 
 
 ## Diagramme de Gantt
 
-Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fonction des mises à jour effectuées sur GitHub.
+Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fonction de l'avancement sur le Projet 
 
 | Tâche                          | Début       | Fin         | Durée (jours) |
 |--------------------------------|-------------|-------------|---------------|
-| Initialisation du projet       | XX  | XX  | 3             |
-| Développement du serveur       | XX  | XX  | 7             |
-| Développement du client        | XX  | XX  | 7             |
-| Intégration des capteurs       | XX  | XX  | 3             |
-| Implémentation du mode autonome| XX  | XX  | 5             |
-| Tests et débogage              | XX  | XX  | 5             |
-| Documentation                  | XX | XX  | 3             |
+| Initialisation du projet       | 12/11/2024  | 16/11/2024  | 5             |
+| Développement du serveur       | 12/11/2024  | 12/01/2025  | 62            |
+| Développement du client        | 12/11/2024  | 12/01/2025  | 62            |
+| Intégration des capteurs       | 13/12/2024  | 12/01/2025  | 31            |
+| Implémentation du mode autonome| 13/12/2024  | 12/01/2025  | 31            |
+| Tests et débogage              | 12/11/2024  | 16/01/2025  | 66            |
+| Documentation                  | 16/01/2025  | 16/01/2025  | 1             |
 
 ## Conclusion
 
