@@ -43,7 +43,7 @@ Le client est une interface graphique développée en Python utilisant Tkinter. 
 
 ## Diagramme de Gantt
 
-Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fonction de l'avancement sur le Projet 
+Le diagramme de Gantt ci-dessous montre les différentes étapes du projet en fonction de l'avancement sur le Projet.
 
 | Tâche                          | Début       | Fin         | Durée (jours) |
 |--------------------------------|-------------|-------------|---------------|
