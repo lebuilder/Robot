@@ -201,62 +201,62 @@ class Buzzer:
         blanche = beat_duration * 2   # 1 seconde complète
 
         # Fréquences des notes utilisées (octave 4 et 5)
-        G4 = 392  # Sol
-        A4 = 440  # La
-        B4 = 493  # Si
-        C5 = 523  # Do
-        D5 = 587  # Ré
-        E5 = 659  # Mi
-        F5 = 698  # Fa
+        Sol = 392  # Sol
+        La = 440  # La
+        Si = 493  # Si
+        Do = 523  # Do
+        Ré = 587  # Ré
+        Mi = 659  # Mi
+        Fa = 698  # Fa
 
         # Début du Menuet de Mozart (simplifié)
-        mrpiZ.buzzer(G4)  # Sol
+        mrpiZ.buzzer(Sol)  # Sol
         time.sleep(noire)
 
-        mrpiZ.buzzer(A4)  # La
+        mrpiZ.buzzer(La)  # La
         time.sleep(noire)
 
-        mrpiZ.buzzer(B4)  # Si
+        mrpiZ.buzzer(Si)  # Si
         time.sleep(noire)
 
-        mrpiZ.buzzer(C5)  # Do
+        mrpiZ.buzzer(Do)  # Do
         time.sleep(noire)
 
-        mrpiZ.buzzer(D5)  # Ré
+        mrpiZ.buzzer(Ré)  # Ré
         time.sleep(noire)
 
-        mrpiZ.buzzer(E5)  # Mi
+        mrpiZ.buzzer(Mi)  # Mi
         time.sleep(noire)
 
-        mrpiZ.buzzer(F5)  # Fa
+        mrpiZ.buzzer(Fa)  # Fa
         time.sleep(noire)
 
-        mrpiZ.buzzer(G4)  # Sol
+        mrpiZ.buzzer(Sol)  # Sol
         time.sleep(blanche)
 
         # Deuxième phrase musicale
-        mrpiZ.buzzer(G4)  # Sol
+        mrpiZ.buzzer(Sol)  # Sol
         time.sleep(noire)
 
-        mrpiZ.buzzer(F5)  # Fa
+        mrpiZ.buzzer(Fa)  # Fa
         time.sleep(noire)
 
-        mrpiZ.buzzer(E5)  # Mi
+        mrpiZ.buzzer(Mi)  # Mi
         time.sleep(noire)
 
-        mrpiZ.buzzer(D5)  # Ré
+        mrpiZ.buzzer(Ré)  # Ré
         time.sleep(noire)
 
-        mrpiZ.buzzer(C5)  # Do
+        mrpiZ.buzzer(Do)  # Do
         time.sleep(noire)
 
-        mrpiZ.buzzer(B4)  # Si
+        mrpiZ.buzzer(Si)  # Si
         time.sleep(noire)
 
-        mrpiZ.buzzer(A4)  # La
+        mrpiZ.buzzer(La)  # La
         time.sleep(noire)
 
-        mrpiZ.buzzer(G4)  # Sol
+        mrpiZ.buzzer(Sol)  # Sol
         time.sleep(blanche)
 
         # Pause avant de rejouer
